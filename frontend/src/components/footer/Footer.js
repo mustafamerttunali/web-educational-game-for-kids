@@ -12,7 +12,11 @@ export default function Footer() {
         <Container>
           <Row>
               <Col md ={12}>
-                <p className="text-center"> <small>&copy; Copyright {currentYear} - Mustafa Mert Tunali, Ahmet Yildiz, Emir Çetin Memis</small> </p> 
+                <p className="text-center"> 
+                  <small>
+                    &copy; Copyright {currentYear} - Mustafa Mert Tunali, Ahmet Yildiz, Emir Çetin Memis
+                  </small> 
+                </p> 
               </Col>
           </Row>
         </Container>
