@@ -1,46 +1,72 @@
 import React, { useState } from 'react'
 
 // Boostrap
-import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'
 
 // CSS
 import './Register.css'
 
+const API = process.env.REACT_APP_API;
+
 export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [parentNameSurname, setParentNameSurname] = useState("");
-  const [childNameSurname, setChildNameSurname] = useState("");
+  const [parentName, setParentName] = useState("");
+  const [parentSurname, setParentSurname] = useState("");
+  const [childName, setChildName] = useState("");
+  const [childSurname, setChildSurname] = useState("");
+
   const [email, setEmail] = useState("");
 
   const [passwordError, setpasswordError] = useState("");
   const [confirmPasswordError, setconfirmPasswordError] = useState("");
-  const [parentNameSurnameError, setParentNameSurnameError] = useState("");
-  const [childNameSurnameError, setChildNameSurnameError] = useState("");
+  const [parentNameError, setParentNameError] = useState("");
+  const [parentSurnameError, setParentSurnameError] = useState("");
+  const [childNameError, setChildNameError] = useState("");
+  const [childSurnameError, setChildSurnameError] = useState("");
   const [emailError, setEmailError] = useState("");
+
+  const [sameUserError] = useState("Cannot register more than once!");
+  const [successRegister] = useState("Successfully registered! Redirecting to login page...");
 
   const handleValidation = (event) => {
     let formIsValid = true;
 
-    if (!parentNameSurname.match(/^[a-zA-Z]{3,22}$/)) {
+    if (!parentName.match(/^[a-zA-Z]{3,22}$/)) {
       formIsValid = false;
-      setParentNameSurnameError(
+      setParentNameError(
         "Only letters and length must best be min:3 and max:22 characters."
       );
       return false;
     }
-    setParentNameSurnameError("");
-    formIsValid = true;
+    setParentNameError("");
+  
+    if (!parentSurname.match(/^[a-zA-Z]{3,22}$/)) {
+      formIsValid = false;
+      setParentSurnameError(
+        "Only letters and length must best be min:3 and max:22 characters."
+      );
+      return false;
+    }
+    setParentSurnameError("");
 
-    if (!childNameSurname.match(/^[a-zA-Z]{3,22}$/)) {
+    if (!childName.match(/^[a-zA-Z]{3,22}$/)) {
       formIsValid = false;
-      setChildNameSurnameError(
+      setChildNameError(
         "Only letters and length must best be min:3 and max:22 characters."
       );
       return false;
     }
-    setChildNameSurnameError("");
-    formIsValid = true;
+    setChildNameError("");
+
+    if (!childSurname.match(/^[a-zA-Z]{3,22}$/)) {
+      formIsValid = false;
+      setChildSurnameError(
+        "Only letters and length must best be min:3 and max:22 characters."
+      );
+      return false;
+    }
+    setChildSurnameError("");
 
     if (!email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
       formIsValid = false;
@@ -71,11 +97,55 @@ export default function Register() {
     return formIsValid;
   }
 
-  const registerSubmit = (e) => {
+  const registerSubmit = async (e) => {
     e.preventDefault();
     let isFormValid = handleValidation();
+
     if(isFormValid){
-      console.log("Register Successful");
+      
+      const formData = {
+        'parent_first_name': parentName,
+        'parent_last_name': parentSurname,
+        'child_first_name': childName,
+        'child_last_name': childSurname,
+        'email': email,
+        'password': password
+      }
+
+      try{
+        const response = await fetch(`${API}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'DELETE, POST, GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
+          },
+          mode: 'cors',
+          body: JSON.stringify(formData)
+        });
+  
+        const data = await response.json();
+        console.log(data)
+        if(data['result'] === "-1"){
+          // Get sameUserError id and display it
+          document.getElementById('sameUserError').style.display = 'block'; 
+          document.getElementById('successRegister').style.display = 'none';  
+        }
+        else{
+          document.getElementById('sameUserError').style.display = 'none';
+          document.getElementById('successRegister').style.display = 'block';  
+        }
+
+        // Redirect to login page
+        setTimeout(() => {
+          window.location.href = '/login';
+        }
+        , 2000);
+      }
+      catch(err){
+        console.log(err)
+      }
     }
   }
 
@@ -92,31 +162,65 @@ export default function Register() {
             <Form onSubmit={registerSubmit}>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={2}>
-                  Parents:
+                  Parent Name:
                 </Form.Label>
                 <Col sm={10}>
                   <Form.Control type="text" 
-                                placeholder="Parent name and surname"
-                                id="ParentNameSurname"
-                                onChange={(event) => setParentNameSurname(event.target.value)} />
+                                placeholder="Parent name"
+                                id="parent_first_name"
+                                name="parent_first_name"
+                                onChange={(event) => setParentName(event.target.value)} />
                 </Col>
                 <small id="parenterror" className="text-danger form-text">
-                  {parentNameSurnameError}
+                  {parentNameError}
                 </small>
               </Form.Group>
 
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={2}>
-                  Child:
+                  Parent Surname:
                 </Form.Label>
                 <Col sm={10}>
                   <Form.Control type="text" 
-                                placeholder="Child name and surname"
-                                id="ChildNameSurname"
-                                onChange={(event) => setChildNameSurname(event.target.value)} />
+                                placeholder="Parent Surname"
+                                id="parent_last_name"
+                                name="parent_last_name"
+                                onChange={(event) => setParentSurname(event.target.value)} />
+                </Col>
+                <small id="parenterror" className="text-danger form-text">
+                  {parentSurnameError}
+                </small>
+              </Form.Group>
+
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={2}>
+                  Child Name:
+                </Form.Label>
+                <Col sm={10}>
+                  <Form.Control type="text" 
+                                placeholder="Child name"
+                                id="ChildName"
+                                name="child_first_name"
+                                onChange={(event) => setChildName(event.target.value)} />
                 </Col>
                 <small id="childerror" className="text-danger form-text">
-                  {childNameSurnameError}
+                  {childNameError}
+                </small>
+              </Form.Group>
+
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={2}>
+                  Child Surname:
+                </Form.Label>
+                <Col sm={10}>
+                  <Form.Control type="text" 
+                                placeholder="Child surname"
+                                id="ChildSurname"
+                                name="child_last_name"
+                                onChange={(event) => setChildSurname(event.target.value)} />
+                </Col>
+                <small id="childerror" className="text-danger form-text">
+                  {childSurnameError}
                 </small>
               </Form.Group>
 
@@ -169,6 +273,15 @@ export default function Register() {
                   Do you have an account? <a href="/login">Login</a>
                 </Form.Text>
               </Form.Group>
+
+              <br></br>
+              <Alert id="sameUserError" variant={"danger"}>
+                {sameUserError}
+              </Alert>
+
+              <Alert id="successRegister" variant={"success"}>
+                {successRegister}
+              </Alert>
 
               <Col md={12} className='d-flex justify-content-center'>
                 <Button variant="primary" type="submit">

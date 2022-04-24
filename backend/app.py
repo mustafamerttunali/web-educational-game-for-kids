@@ -19,12 +19,12 @@ CORS(app)
 
 @app.route('/register', methods=['POST'])
 def register():
-    email = request.form['email']
-    password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
-    parent_first_name = request.form['parent_first_name']
-    parent_last_name = request.form['parent_last_name']
-    child_first_name = request.form['child_first_name']
-    child_last_name = request.form['child_last_name']
+    email = request.json['email']
+    password = bcrypt.generate_password_hash(request.json['password']).decode('utf-8')
+    parent_first_name = request.json['parent_first_name']
+    parent_last_name = request.json['parent_last_name']
+    child_first_name = request.json['child_first_name']
+    child_last_name = request.json['child_last_name']
     created_at = datetime.utcnow()
 
     user = mongo.db.users.find_one({'email': email})
@@ -48,8 +48,8 @@ def register():
 
 @app.route('/login', methods=['POST'])
 def login():
-    email = request.form['email']
-    password = request.form['password']
+    email = request.json['email']
+    password = request.json['password']
     
     user = mongo.db.users.find_one({'email': email})
 
