@@ -68,7 +68,7 @@ export default function Register() {
     }
     setChildSurnameError("");
 
-    if (!email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+    if (!email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
       formIsValid = false;
       setEmailError("Email is not valid.");
       return false;
