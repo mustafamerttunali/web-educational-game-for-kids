@@ -1,21 +1,25 @@
 import React, { useState } from 'react'
 
 // Boostrap
-import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'
 
 // CSS
 import './Login.css'
 
+const API = process.env.REACT_APP_API;
+
 export default function Login(props) {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [passwordError, setpasswordError] = useState("");
   const [emailError, setemailError] = useState("");
+
+  const [loginError] = useState("Cannot login! Email or password is incorrect!");
+  const [loginSuccess] = useState("Successfully signed-in! Redirecting to dashboard...");
 
   const handleValidation = (event) => {
     let formIsValid = true;
 
-    if (!email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+    if (!email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
       formIsValid = false;
       setemailError("Email is not valid.");
       return false;
@@ -23,26 +27,43 @@ export default function Login(props) {
       setemailError("");
       formIsValid = true;
     }
-
-    if (!password.match(/^[a-zA-Z]{8,22}$/)) {
-      formIsValid = false;
-      setpasswordError(
-        "Only letters and length must best be min:8 and max:22 characters."
-      );
-      return false;
-    } else {
-      setpasswordError("");
-      formIsValid = true;
-    }
-
     return formIsValid;
   };
 
+  // Destroy token: localStorage.removeItem('token');
   const loginSubmit = (e) => {
     e.preventDefault();
     let isFormValid = handleValidation();
     if(isFormValid){
-      console.log("Login Successful");
+      const formData = {
+        'email': email,
+        'password': password
+    }
+
+      fetch(API + '/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data['result'] === '1'){
+          document.getElementById('loginError').style.display = 'none';
+          document.getElementById('successLogin').style.display = 'block';  
+
+          localStorage.setItem('token', data['access_token']);
+          setTimeout(() => {
+            window.location.href = '/';
+          }
+          , 1500);
+        }
+        else{
+          document.getElementById('loginError').style.display = 'block';
+          document.getElementById('successLogin').style.display = 'none';
+        }
+      })
     }
   };
 
@@ -86,9 +107,6 @@ export default function Login(props) {
                                 id="InputPassword"
                                 onChange={(event) => setPassword(event.target.value)} />
                 </Col>
-                <small id="passworderror" className="text-danger form-text">
-                  {passwordError}
-                </small>
                 <Form.Text className="text-muted">
                   Don't you have an account? <a href="/register">Register</a>
                 </Form.Text>
@@ -99,6 +117,16 @@ export default function Login(props) {
                   Login
                 </Button>
               </Col>
+
+              <br></br>
+
+              <Alert id="successLogin" variant={"success"}>
+                {loginSuccess}
+              </Alert>
+
+              <Alert id="loginError" variant={"danger"}>
+                {loginError}
+              </Alert>
 
             </Form>
           </Col>
