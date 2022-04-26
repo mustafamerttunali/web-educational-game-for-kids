@@ -7,6 +7,7 @@ import Register from "./components/register/Register";
 import Home from "./components/home/Home";
 import Footer from "./components/footer/Footer";
 import ResetPassword from "./components/reset-password/ResetPassword";
+import UnsecretNav from "./components/unsecret-nav/UnsecretNav";
 
 // Secret components for testing
 import Dashboard from "./components/dashboard/Dashboard";
@@ -14,6 +15,8 @@ import Dashboard from "./components/dashboard/Dashboard";
 function App() {
   return (
     <div>
+      <UnsecretNav />
+      <br></br>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />

@@ -72,12 +72,11 @@ export default function Login(props) {
       <Container>
         <Row className='d-flex justify-content-center'>
           <Col md={12}>
-            <h1 className='text-center'>Web Educational Game For Kids</h1>
+            <h1 className='text-center'>Login</h1>
             <hr></hr>
           </Col>
         
           <Col md={4}>
-            <h3>Login</h3>
             <Form onSubmit={loginSubmit}>
 
               <Form.Group className="mb-3">

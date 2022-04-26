@@ -155,11 +155,10 @@ export default function Register() {
       <Container>
         <Row className='d-flex justify-content-center'>
           <Col md={12}>
-            <h1 className='text-center'>Web Educational Game For Kids</h1>
+            <h1 className='text-center'>Register</h1>
             <hr></hr>
           </Col>
           <Col md={4}>
-            <h3>Register</h3>
             <Form onSubmit={registerSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label>
@@ -274,8 +273,6 @@ export default function Register() {
                   Do you have an account? <a href="/login">Login</a>
                 </Form.Text>
               </Form.Group>
-              
-              <br></br>
 
               <Alert id="sameUserError" variant={"danger"}>
                 {sameUserError}
