@@ -134,14 +134,15 @@ export default function Register() {
         }
         else{
           document.getElementById('sameUserError').style.display = 'none';
-          document.getElementById('successRegister').style.display = 'block';  
+          document.getElementById('successRegister').style.display = 'block'; 
+          
+          // Redirect to login page
+          setTimeout(() => {
+            window.location.href = '/login';
+          }
+          , 2000);
         }
 
-        // Redirect to login page
-        setTimeout(() => {
-          window.location.href = '/login';
-        }
-        , 2000);
       }
       catch(err){
         console.log(err)
