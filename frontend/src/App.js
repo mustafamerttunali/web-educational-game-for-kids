@@ -6,6 +6,7 @@ import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import Home from "./components/home/Home";
 import Footer from "./components/footer/Footer";
+import ResetPassword from "./components/reset-password/ResetPassword";
 
 // Secret components for testing
 import Dashboard from "./components/dashboard/Dashboard";
@@ -19,6 +20,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </Router>
       <br></br>
