@@ -12,6 +12,7 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^2.1.3",
+    "react-token-auth": "^2.3.8",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

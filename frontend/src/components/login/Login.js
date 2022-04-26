@@ -49,13 +49,13 @@ export default function Login(props) {
       })
       .then(res => res.json())
       .then(data => {
-        if (data['result'] === '1'){
+        if (data['status'] === 200){
           document.getElementById('loginError').style.display = 'none';
           document.getElementById('successLogin').style.display = 'block';  
 
           localStorage.setItem('token', data['access_token']);
           setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = '/dashboard';
           }
           , 1500);
         }

@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
@@ -58,19 +59,22 @@ def login():
         return result
     
     if bcrypt.check_password_hash(user['password'], password):
-        access_token = create_access_token(identity=email)
+        access_token = create_access_token(identity=str(user['_id']))
         result = jsonify({"status": 200, "access_token": access_token})
         return result
     else:
         result = jsonify({"status": 401})
         return result
 
-@app.route('/', methods=['GET'])
+@app.route('/dashboard', methods=['GET'])
 @jwt_required()
 def dashboard():
-    current_user = get_jwt_identity()
-    user = mongo.db.users.find_one({'_id': current_user})
-    return jsonify(user)
+    try:
+        user_id = get_jwt_identity()
+        user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+        return jsonify({"status": 200})
+    except:
+        return jsonify({"status": 401})
  
 """@app.route('/forgot_password', methods=['POST'])
 def forgot_password():
