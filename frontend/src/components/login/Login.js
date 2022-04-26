@@ -76,12 +76,12 @@ export default function Login(props) {
             <hr></hr>
           </Col>
         
-          <Col md={5}>
+          <Col md={4}>
             <h3>Login</h3>
             <Form onSubmit={loginSubmit}>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Email
                 </Form.Label>
                 <Col sm={10}>
@@ -97,8 +97,8 @@ export default function Login(props) {
                 </small>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Password
                 </Form.Label>
                 <Col sm={10}>
@@ -111,8 +111,13 @@ export default function Login(props) {
                   Don't you have an account? <a href="/register">Register</a>
                 </Form.Text>
               </Form.Group>
+              <Form.Text className="text-muted">
+                  Forgot your password? <a href="/reset-password">Reset your password</a>
+                  <br></br>
+              </Form.Text>
+              <br></br>
 
-              <Col md={12} className='d-flex justify-content-center'>
+              <Col md={12} className='d-flex justify-content-left'>
                 <Button variant="primary" type="submit">
                   Login
                 </Button>

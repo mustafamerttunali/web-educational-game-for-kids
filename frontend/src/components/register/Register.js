@@ -158,16 +158,16 @@ export default function Register() {
             <h1 className='text-center'>Web Educational Game For Kids</h1>
             <hr></hr>
           </Col>
-          <Col md={5}>
+          <Col md={4}>
             <h3>Register</h3>
             <Form onSubmit={registerSubmit}>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Parent Name:
                 </Form.Label>
                 <Col sm={10}>
                   <Form.Control type="text" 
-                                placeholder="Parent name"
+                                placeholder="Parent Name"
                                 id="parent_first_name"
                                 name="parent_first_name"
                                 onChange={(event) => setParentName(event.target.value)} />
@@ -177,8 +177,8 @@ export default function Register() {
                 </small>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Parent Surname:
                 </Form.Label>
                 <Col sm={10}>
@@ -193,13 +193,13 @@ export default function Register() {
                 </small>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Child Name:
                 </Form.Label>
                 <Col sm={10}>
                   <Form.Control type="text" 
-                                placeholder="Child name"
+                                placeholder="Child Name"
                                 id="ChildName"
                                 name="child_first_name"
                                 onChange={(event) => setChildName(event.target.value)} />
@@ -209,13 +209,13 @@ export default function Register() {
                 </small>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Child Surname:
                 </Form.Label>
                 <Col sm={10}>
                   <Form.Control type="text" 
-                                placeholder="Child surname"
+                                placeholder="Child Surname"
                                 id="ChildSurname"
                                 name="child_last_name"
                                 onChange={(event) => setChildSurname(event.target.value)} />
@@ -225,8 +225,8 @@ export default function Register() {
                 </small>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Email
                 </Form.Label>
                 <Col sm={10}>
@@ -242,8 +242,8 @@ export default function Register() {
                 </small>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Password
                 </Form.Label>
                 <Col sm={10}>
@@ -257,8 +257,8 @@ export default function Register() {
                 </small>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={2}>
+              <Form.Group className="mb-3">
+                <Form.Label>
                   Confirm Password
                 </Form.Label>
                 <Col sm={10}>
@@ -274,8 +274,9 @@ export default function Register() {
                   Do you have an account? <a href="/login">Login</a>
                 </Form.Text>
               </Form.Group>
-
+              
               <br></br>
+
               <Alert id="sameUserError" variant={"danger"}>
                 {sameUserError}
               </Alert>
@@ -284,7 +285,7 @@ export default function Register() {
                 {successRegister}
               </Alert>
 
-              <Col md={12} className='d-flex justify-content-center'>
+              <Col md={12} className='d-flex justify-content-left'>
                 <Button variant="primary" type="submit">
                   Register
                 </Button>
