@@ -54,17 +54,24 @@ def login():
     user = mongo.db.users.find_one({'email': email})
 
     if not user:
-        result = jsonify({"result":"Password or email is incorrect"})
+        result = jsonify({"status": 401})
         return result
     
     if bcrypt.check_password_hash(user['password'], password):
         access_token = create_access_token(identity=email)
-        result = jsonify({"result":"1", "access_token": access_token})
+        result = jsonify({"status": 200, "access_token": access_token})
         return result
     else:
-        result = jsonify({"result":"Password or email is incorrect"})
+        result = jsonify({"status": 401})
         return result
-        
+
+@app.route('/', methods=['GET'])
+@jwt_required()
+def dashboard():
+    current_user = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': current_user})
+    return jsonify(user)
+ 
 """@app.route('/forgot_password', methods=['POST'])
 def forgot_password():
     email = request.form['email']
