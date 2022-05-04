@@ -72,7 +72,9 @@ def dashboard():
     try:
         user_id = get_jwt_identity()
         user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
-        return jsonify({"status": 200})
+        return jsonify({"status": 200,
+                       "child_first_name": user['child_first_name'] + " " + user['child_last_name'],
+                    })
     except:
         return jsonify({"status": 401})
  

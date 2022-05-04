@@ -11,6 +11,7 @@ import UnsecretNav from "./components/unsecret-nav/UnsecretNav";
 
 // Secret components for testing
 import Dashboard from "./components/dashboard/Dashboard";
+import Logout from "./components/logout/Logout";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
