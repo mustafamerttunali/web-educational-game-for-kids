@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { Container, Row, Col, Image, Card} from 'react-bootstrap'
+import { Container, Row, Col, Card} from 'react-bootstrap'
+import UnsecretNav from "../unsecret-nav/UnsecretNav";
 
 import Apple from '../../images/apple.png'
 import Robot from '../../images/robot.png'
@@ -15,6 +16,7 @@ export default function Home() {
   return (
     <div>
       <Container>
+        <UnsecretNav />
         <Row className='d-flex justify-content-center'>
           <Col md={12}>
             <h1 className='text-center'>Home</h1>

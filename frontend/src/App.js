@@ -15,7 +15,6 @@ import Dashboard from "./components/dashboard/Dashboard";
 function App() {
   return (
     <div>
-      <UnsecretNav />
       <br></br>
       <Router>
         <Routes>

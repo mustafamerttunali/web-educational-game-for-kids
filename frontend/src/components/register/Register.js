@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 // Boostrap
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'
 
+import UnsecretNav from "../unsecret-nav/UnsecretNav";
+
 // CSS
 import './Register.css'
 
@@ -153,6 +155,7 @@ export default function Register() {
   return (
     <div>
       <Container>
+      <UnsecretNav />
         <Row className='d-flex justify-content-center'>
           <Col md={12}>
             <h1 className='text-center'>Register</h1>

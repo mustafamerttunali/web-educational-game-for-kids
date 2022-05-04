@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 // Boostrap
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'
 
+import UnsecretNav from "../unsecret-nav/UnsecretNav";
+
 // CSS
 import './ResetPassword.css'
 
@@ -23,6 +25,7 @@ export default function ResetPassword() {
   return (
     <div>
         <Container>
+            <UnsecretNav />
             <Row className='d-flex justify-content-center'>
                 <Col md={12}>
                     <h1 className='text-center'>Web Educational Game For Kids</h1>
