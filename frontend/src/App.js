@@ -7,7 +7,6 @@ import Register from "./components/register/Register";
 import Home from "./components/home/Home";
 import Footer from "./components/footer/Footer";
 import ResetPassword from "./components/reset-password/ResetPassword";
-import UnsecretNav from "./components/unsecret-nav/UnsecretNav";
 
 // Secret components for testing
 import Dashboard from "./components/dashboard/Dashboard";
