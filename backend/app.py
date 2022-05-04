@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 from bson.objectid import ObjectId
+from scripts.util import count_game_questions
 
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
@@ -17,6 +18,10 @@ mail = Mail(app)
 jwt = JWTManager(app)
 
 CORS(app)
+
+if  mongo.db.count_game_questions.find_one():
+    mongo.db.count_game_questions.drop()
+count_game_questions(mongo)
 
 @app.route('/register', methods=['POST'])
 def register():
