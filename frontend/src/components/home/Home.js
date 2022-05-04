@@ -35,7 +35,7 @@ export default function Home() {
        
           <Col md={4}>
             <Card>
-              <Card.Img className='mx-auto d-block' variant="center" src={Apple} style={{height:"120px", width:"40%"}}/>
+              <Card.Img className='mx-auto d-block' variant="center" src={Apple} style={{height:"120px", width:"30%"}}/>
               <Card.Body>
                 <Card.Title className="text-center">Counting Game</Card.Title>
                 <Card.Text>
@@ -48,7 +48,7 @@ export default function Home() {
 
           <Col md={4}>
             <Card>
-              <Card.Img className='mx-auto d-block' variant="center" src={Robot} style={{height:"120px", width:"40%"}}/>
+              <Card.Img className='mx-auto d-block' id="kidImage" variant="center" src={Robot} style={{height:"120px", width:"30%"}}/>
               <Card.Body>
                 <Card.Title className="text-center">Math Game</Card.Title>
                 <Card.Text>
@@ -61,7 +61,7 @@ export default function Home() {
 
           <Col md={4}>
             <Card>
-              <Card.Img className='mx-auto d-block' variant="center" src={Boy} style={{height:"120px", width:"40%"}}/>
+              <Card.Img className='mx-auto d-block' variant="center" src={Boy} style={{height:"120px", width:"20%"}}/>
               <Card.Body>
                 <Card.Title className="text-center">Choosing Game</Card.Title>
                 <Card.Text>
