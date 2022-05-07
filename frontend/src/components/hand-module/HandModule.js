@@ -23,14 +23,12 @@ export default function HandModule() {
         const runHandpose = async () => {
             const net = await handpose.load();
             console.log("Handpose model loaded.");
-            //  Loop and detect hands
             setInterval(() => {
               detect(net);
             }, 10);
           };
         
         const detect = async (net) => {
-            // Check data is available
             if (
               typeof webcamRef.current !== "undefined" &&
               webcamRef.current !== null &&
