@@ -11,6 +11,7 @@ import ResetPassword from "./components/reset-password/ResetPassword";
 // Secret components for testing
 import Dashboard from "./components/dashboard/Dashboard";
 import Logout from "./components/logout/Logout";
+import HandModule from "./components/hand-module/HandModule";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/hand" element={<HandModule />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
