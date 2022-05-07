@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 from bson.objectid import ObjectId
-from scripts.util import count_game_questions
+from scripts.util import count_game_questions, set_user, set_count_game_answers
 
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
@@ -39,15 +39,12 @@ def register():
         result = jsonify({"result":"-1"})
         return result
 
-    mongo.db.users.insert_one({
-        'email': email,
-        'password': password,
-        'parent_first_name': parent_first_name,
-        'parent_last_name': parent_last_name,
-        'child_first_name': child_first_name,
-        'child_last_name': child_last_name,
-        'created_at': created_at
-    })
+    set_user(mongo, email, password, parent_first_name, parent_last_name, child_first_name, child_last_name, created_at)
+
+    created_user = mongo.db.users.find_one({'email': email})
+    user_id = created_user["_id"]
+
+    set_count_game_answers(mongo, user_id)
 
     result = jsonify({"result":"1"})
     return result
@@ -82,7 +79,33 @@ def dashboard():
                     })
     except:
         return jsonify({"status": 401})
- 
+
+@app.route('/count_game', methods=['GET'])
+@jwt_required()
+def count_game():
+    try:
+        user_id = get_jwt_identity()
+        user = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
+
+        number_of_questions = mongo.db.count_game_questions.find().count()
+
+        questions = list()
+        counter = 4
+        for i in range(1, number_of_questions):
+            if user[str(i)] == None or user[str(i)] == False:
+                question = mongo.db.count_game_questions.find_one({'number': i})
+                questions.append(question)
+                counter -= 1
+
+            if counter == 0:
+                break
+
+        
+
+    except:
+        return jsonify({"status": 401})
+
+
 """@app.route('/forgot_password', methods=['POST'])
 def forgot_password():
     email = request.form['email']
