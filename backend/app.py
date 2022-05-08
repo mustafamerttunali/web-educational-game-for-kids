@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from datetime import datetime
 from bson.objectid import ObjectId
 from bson.json_util import dumps
-from scripts.util import count_game_questions, set_user, set_count_game_answers
+from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question
 import random
 import json
 
@@ -48,6 +48,7 @@ def register():
     user_id = created_user["_id"]
 
     set_count_game_answers(mongo, user_id)
+    set_math_game_answers(mongo, user_id)
 
     result = jsonify({"result":"1"})
     return result
@@ -91,7 +92,7 @@ def count_game():
             user_id = get_jwt_identity()
             user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
-            number_of_questions = 24
+            number_of_questions = 24 #look here
             questions = dict()
             counter = 4
             for i in range(1, number_of_questions):
@@ -118,10 +119,35 @@ def math_game():
     if request.method == "GET":
         try:
             user_id = get_jwt_identity()
+            user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+            user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
 
+            # Check answered number of questions
+            unanswred_questions = 0
+            for i in range(1, 31):
+                if user_answers["q" + str(i)] == None:
+                    unanswred_questions += 1
+
+            if unanswred_questions == 0:
+                return jsonify({"status": 200, "result": "1"})
+
+            # Create math question
+            if unanswred_questions > 4:
+                show_question_number = 4
+
+            else:
+                show_question_number = unanswred_questions
+
+            questions = dict()
+
+            for i in range(show_question_number):
+                question = create_math_question()
+                questions[str(i + 1)] = question
+
+            questions["status"] = 200
+            questions["player"] = user['child_first_name'] + " " + user['child_last_name']
+            return json.loads(dumps(questions))
             
-            return
-
         except:
             return jsonify({"status": 401})
 
