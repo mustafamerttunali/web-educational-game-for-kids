@@ -41,10 +41,10 @@ ThreeGesture.addCurl(Finger.Middle, FingerCurl.NoCurl, 1.0);
 ThreeGesture.addCurl(Finger.Ring, FingerCurl.NoCurl, 1.0);
 ThreeGesture.addCurl(Finger.Pinky, FingerCurl.NoCurl, 1.0);
 // Index and Thumbs Finger
-ThreeGesture.addCurl(Finger.Index, FingerCurl.FullCurl, 1.0);
+ThreeGesture.addCurl(Finger.Index, FingerCurl.FullCurl, 0.9);
 ThreeGesture.addCurl(Finger.Index, FingerCurl.HalfCurl, 0.9);
-ThreeGesture.addCurl(Finger.Thumbs, FingerCurl.FullCurl, 1.0);
-ThreeGesture.addCurl(Finger.Thumbs, FingerCurl.HalfCurl, 0.9);
+ThreeGesture.addCurl(Finger.Thumb, FingerCurl.FullCurl, 0.9);
+ThreeGesture.addCurl(Finger.Thumb, FingerCurl.HalfCurl, 0.9);
 
 // *********************************************************
 // FourGesture
@@ -54,17 +54,14 @@ FourGesture.addCurl(Finger.Ring, FingerCurl.NoCurl, 1.0);
 FourGesture.addCurl(Finger.Pinky, FingerCurl.NoCurl, 1.0);
 FourGesture.addCurl(Finger.Index, FingerCurl.NoCurl, 1.0);
 
-FourGesture.addCurl(Finger.Thumbs, FingerCurl.HalfCurl, 0.9);
-FourGesture.addCurl(Finger.Thumbs, FingerCurl.FullCurl, 1.0);
+// FourGesture.addCurl(Finger.Thumbs, FingerCurl.NoCurl, 0.1);
+FourGesture.addCurl(Finger.Thumb, FingerCurl.FullCurl, 1.0);
+FourGesture.addCurl(Finger.Thumb, FingerCurl.HalfCurl, 0.9);
+// FourGesture.addDirection(Finger.Thumb, FingerDirection.VerticalUp, 1.0);
 
-// *********************************************************
-// FiveGesture
-// -----------------
-// FiveGesture.addCurl(Finger.Index, FingerCurl.NoCurl, 1.0);
-// FiveGesture.addCurl(Finger.Thumbs, Finger.NoCurl, 1.0);
-// FiveGesture.addCurl(Finger.Ring, FingerCurl.NoCurl, 1.0);
-// FiveGesture.addCurl(Finger.Pinky, FingerCurl.NoCurl, 1.0);
-// FiveGesture.addCurl(Finger.Middle, FingerCurl.NoCurl, 1.0);
+for(let finger of Finger.all) {
+    FiveGesture.addCurl(finger, FingerCurl.NoCurl, 1.0);
+}
 
 // FiveGesture.addCurl(Finger.Thumbs, Finger.HalfCurl, 0.9);
 // FiveGesture.addCurl(Finger.Thumbs, Finger.FullCurl, 1.0);

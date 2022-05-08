@@ -67,6 +67,7 @@ export default function HandModuleTest() {
                 if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
                     let decisionGestureName = undefined;
                     console.log(gesture.gestures)
+                    // console.log(arr)
                     const maxConfidence = gesture.gestures.reduce(
                         (acc, curr) => (acc.score > curr.score ? acc : curr),
                         { confidence: 0 }
