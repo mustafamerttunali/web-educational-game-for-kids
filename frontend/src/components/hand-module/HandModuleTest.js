@@ -97,15 +97,12 @@ export default function HandModuleTest() {
                             <Webcam
                                 ref={webcamRef}
                                 style={{
-                                    position: "absolute",
-                                    marginLeft: "auto",
-                                    marginRight: "auto",
                                     left: 0,
                                     right: 0,
-                                    textAlign: "center",
+                                    textAlign: "left",
                                     zindex: 9,
-                                    width: 640,
-                                    height: 480,
+                                    width: 320,
+                                    height: 240,
                                 }}
                             />
 
@@ -143,7 +140,6 @@ export default function HandModuleTest() {
                         </Col>
                     </Row>
                 </Container>
-                Test
             </div>
         )
 }

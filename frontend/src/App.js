@@ -12,6 +12,7 @@ import ResetPassword from "./components/reset-password/ResetPassword";
 import Dashboard from "./components/dashboard/Dashboard";
 import Logout from "./components/logout/Logout";
 import HandModuleTest from "./components/hand-module/HandModuleTest";
+import CountGame from "./components/count-game/CountGame";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/count-game" element={<CountGame />} />
         </Routes>
       </Router>
       <br></br>

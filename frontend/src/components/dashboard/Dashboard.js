@@ -72,7 +72,7 @@ export default function Dashboard() {
                   This is a longer card with supporting text below as a natural
                   lead-in to additional content. This content is a little bit longer.
                 </Card.Text>
-                <a href="/counting-game" className="btn btn-primary">Go to Game</a>
+                <a href="/count-game" className="btn btn-primary">Go to Game</a>
               </Card.Body>
             </Card>
           </Col>
