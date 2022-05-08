@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from datetime import datetime
 from bson.objectid import ObjectId
 from scripts.util import count_game_questions, set_user, set_count_game_answers
+import random
 
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
@@ -80,30 +81,54 @@ def dashboard():
     except:
         return jsonify({"status": 401})
 
-@app.route('/count-game', methods=['GET'])
+@app.route('/count-game', methods=['GET', 'POST'])
 @jwt_required()
 def count_game():
-    try:
-        user_id = get_jwt_identity()
-        user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
+    if request.method == "GET":
+        try:
+            user_id = get_jwt_identity()
+            user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
 
-        number_of_questions = mongo.db.count_game_questions.find().count()
+            number_of_questions = mongo.db.count_game_questions.find().count()
 
-        questions = list()
-        counter = 4
-        for i in range(1, number_of_questions):
-            if user_answers[str(i)] == None or user_answers[str(i)] == False:
-                question = mongo.db.count_game_questions.find_one({'number': i})
-                questions.append(question)
-                counter -= 1
+            questions = dict()
+            counter = 4
+            for i in range(1, number_of_questions):
+                if user_answers[str(i)] == None or user_answers[str(i)] == False:
+                    number_of_object = random.randint(1, 5)
+                    question = mongo.db.count_game_questions.find_one({'number': i})
+                    question["number_of_object"] = number_of_object
+                    questions.append(question)
+                    counter -= 1
 
-            if counter == 0:
-                break
+                if counter == 0:
+                    question["status"] == 200
+                    break
 
-        return jsonify(questions)
+            return jsonify(questions)
 
-    except:
-        return jsonify({"status": 401})
+        except:
+            return jsonify({"status": 401})
+
+    else:
+        return
+
+@app.route('/math-game', methods=['GET', 'POST'])
+@jwt_required()
+def math_game():
+    if request.method == "GET":
+        try:
+            user_id = get_jwt_identity()
+
+            
+            return
+
+        except:
+            return jsonify({"status": 401})
+
+    else:
+        return
+
 
 
 """@app.route('/forgot_password', methods=['POST'])
