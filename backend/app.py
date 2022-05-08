@@ -7,8 +7,10 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 from bson.objectid import ObjectId
+from bson.json_util import dumps
 from scripts.util import count_game_questions, set_user, set_count_game_answers
 import random
+import json
 
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
@@ -87,10 +89,9 @@ def count_game():
     if request.method == "GET":
         try:
             user_id = get_jwt_identity()
+            user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
-
-            number_of_questions = mongo.db.count_game_questions.find().count()
-
+            number_of_questions = 24
             questions = dict()
             counter = 4
             for i in range(1, number_of_questions):
@@ -98,18 +99,16 @@ def count_game():
                     number_of_object = random.randint(1, 5)
                     question = mongo.db.count_game_questions.find_one({'number': i})
                     question["number_of_object"] = number_of_object
-                    questions.append(question)
+                    questions[str(counter)] = question
                     counter -= 1
-
                 if counter == 0:
-                    question["status"] == 200
+                    questions["status"] = 200
                     break
-
-            return jsonify(questions)
-
+            
+            questions["player"] = user['child_first_name'] + " " + user['child_last_name']
+            return json.loads(dumps(questions))
         except:
             return jsonify({"status": 401})
-
     else:
         return
 

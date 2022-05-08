@@ -16,7 +16,7 @@ export default function CountGame() {
         const token = localStorage.getItem('token');
     
         if (token) {
-          fetch(API + '/dashboard', {
+          fetch(API + '/count-game', {
             method: 'GET',
             headers: {
               Authorization: 'Bearer ' + token
@@ -24,12 +24,14 @@ export default function CountGame() {
           })
           .then(res => res.json())
           .then(data => {
-            if (data['status'] !== 200){
-              window.location.href = '/login';
-            }
-            else{
-              setUser(data['child_first_name']);
-            }
+              console.log(data)
+            // if (data['status'] !== 200){
+            //   window.location.href = '/login';
+            // }
+            // else{
+            //     console.log(data);
+            //   // setUser(data['child_first_name']);
+            // }
           })
         } else{
           window.location.href = '/login';
