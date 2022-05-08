@@ -1,4 +1,5 @@
 import os
+import random
 
 def count_game_questions(mongo):
     os.chdir("../")
@@ -98,3 +99,34 @@ def set_math_game_answers(mongo, user_id):
         'correct_answer': 0
 
     })
+
+def create_math_question():
+    first_number = random.randint(1, 5)
+    second_number = random.randint(1, 5)
+    operator = random.choice(["+", "-", "*", "/"])
+    correct_answer = 0
+
+
+    if operator == "+":
+        answer = first_number + second_number
+        if answer <= 5 and answer >= 1:
+            return first_number, second_number, operator, answer
+    
+    elif operator == "-":
+        answer = first_number - second_number
+        if answer <= 5 and answer >= 1:
+            return first_number, second_number, operator, answer
+
+    elif operator == "*":
+        answer = first_number * second_number
+        if answer <= 5 and answer >= 1:
+            return first_number, second_number, operator, answer
+
+    elif operator == "/":
+        answer = first_number / second_number
+        if answer <= 5 and answer >= 1 and answer.isinstance(int):
+            return first_number, second_number, operator, answer
+
+    return first_number, second_number, operator, answer
+
+    
