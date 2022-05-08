@@ -85,14 +85,14 @@ def dashboard():
 def count_game():
     try:
         user_id = get_jwt_identity()
-        user = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
+        user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
 
         number_of_questions = mongo.db.count_game_questions.find().count()
 
         questions = list()
         counter = 4
         for i in range(1, number_of_questions):
-            if user[str(i)] == None or user[str(i)] == False:
+            if user_answers[str(i)] == None or user_answers[str(i)] == False:
                 question = mongo.db.count_game_questions.find_one({'number': i})
                 questions.append(question)
                 counter -= 1
@@ -100,7 +100,7 @@ def count_game():
             if counter == 0:
                 break
 
-        
+        return jsonify(questions)
 
     except:
         return jsonify({"status": 401})
