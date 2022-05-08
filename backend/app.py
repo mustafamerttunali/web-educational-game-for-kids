@@ -80,7 +80,7 @@ def dashboard():
     except:
         return jsonify({"status": 401})
 
-@app.route('/count_game', methods=['GET'])
+@app.route('/count-game', methods=['GET'])
 @jwt_required()
 def count_game():
     try:
