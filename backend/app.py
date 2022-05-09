@@ -118,7 +118,7 @@ def count_game():
                     question["number_of_object"] = number_of_object
                     questions[str(counter)] = question
                     counter += 1
-                if counter == show_question_number - 1:
+                if counter == show_question_number:
                     questions["status"] = 200
                     break
             questions["player"] = user['child_first_name'] + " " + user['child_last_name']
