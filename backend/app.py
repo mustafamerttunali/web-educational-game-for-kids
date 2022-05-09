@@ -93,25 +93,43 @@ def count_game():
             user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
             number_of_questions = 24 #look here
+            max_shown_questions = 4
             questions = dict()
-            counter = 4
-            # TODO: Fix counter problem.
+
+            unanswered_questions = 0
+            for i in range(1, number_of_questions + 1):
+                if user_answers[str(i)] == None or user_answers[str(i)] == False:
+                    unanswered_questions += 1
+
+            if unanswered_questions == 0:
+                return jsonify({"status": 200, "result": "1"})
+
+            if unanswered_questions > max_shown_questions:
+                show_question_number = max_shown_questions
+
+            else:
+                show_question_number = unanswered_questions
+
+            counter = 0
             for i in range(1, number_of_questions):
                 if user_answers[str(i)] == None or user_answers[str(i)] == False:
                     number_of_object = random.randint(1, 5)
                     question = mongo.db.count_game_questions.find_one({'number': i})
                     question["number_of_object"] = number_of_object
                     questions[str(counter)] = question
-                    counter -= 1
-                if counter == 0:
+                    counter += 1
+                if counter == show_question_number - 1:
                     questions["status"] = 200
                     break
             questions["player"] = user['child_first_name'] + " " + user['child_last_name']
             return json.loads(dumps(questions))
         except:
             return jsonify({"status": 401})
-    else:
+    elif request.method == "POST":
         return
+
+    else:
+        return jsonify({"status": 401})
 
 @app.route('/math-game', methods=['GET', 'POST'])
 @jwt_required()
@@ -123,8 +141,9 @@ def math_game():
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
 
             # Check answered number of questions
+            total_question = 30
             unanswered_questions = 0
-            for i in range(1, 31):
+            for i in range(1, total_question + 1):
                 if user_answers["q" + str(i)] == None:
                     unanswered_questions += 1
 
@@ -151,10 +170,11 @@ def math_game():
         except:
             return jsonify({"status": 401})
 
-    else:
+    elif request.method == "POST":
         return
 
-
+    else:  
+        return jsonify({"status": 401})
 
 """@app.route('/forgot_password', methods=['POST'])
 def forgot_password():
