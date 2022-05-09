@@ -34,7 +34,6 @@ export default function CountGame() {
             const keys = Object.keys(data).filter(key => typeof data[key] === 'object');
             for(let i = 0; i < keys.length; i++){
                 let key = keys[i];
-                // Wait for the setQuestions to be set
                 setQuestions(prevState => [...prevState, data[key]]);
             }
         }
@@ -50,12 +49,10 @@ export default function CountGame() {
         setCurrentQuestion(prevState => prevState + 1);
     }
 
-
-
   return (
     <div>
         <Container>
-            <SecretNav />
+            <SecretNav user={user}/>
             <Row className='d-flex justify-content-left'>
                 <Col md={12}>
                     <h1 className='text-center'>Counting Game</h1>
@@ -86,14 +83,15 @@ export default function CountGame() {
                 }
 
                 </Col>
-                <Col md={4}>
+                <Col md={4} className="text-center">
                     <Card>
                         <Card.Body>
-                            {/* <HandModuleTest /> */}
+                            <HandModuleTest/>
+                            <br></br>
                             <Button variant="primary" onClick={() => {
                                 handleNextQuestion()
                                 
-                            }}> onClick </Button>
+                            }}> Next Question</Button>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -102,50 +100,3 @@ export default function CountGame() {
     </div>
   )
 }
-
-
-{
-     /* {
-                        // Show only 1 question at a time and hide the rest
-                        questions.map((question, index) => {
-                            
-                            return (
-                                <Card key={index} id={`question-${index}`} className="text-center questionsdiv">
-                                    <Card.Header>
-                                        <strong>{question.name}</strong>
-                                    </Card.Header>
-                                    <Card.Body>
-                                        <Card.Text>
-                                            {question.number}
-                                        </Card.Text>
-                                        <Button variant="primary" onClick={() => hideQuestion(`question-${index}`)}>
-                                            Hide
-                                        </Button>
-                                    </Card.Body>
-                                </Card>
-                            )
-                        })
-                        
-                    } */
-}
-
-    
-                    {/* {
-                    
-                    questions.map((question) => (
-                        <Col md={12} key={currentQuestion}>
-                            <Card key={question._id} id={question.name + question.number}>
-                                <h1>Q:{question.number} How many <strong>{question.name}</strong> in the picture? :{question.number_of_object}</h1>
-                                <Row>
-                                    {Array(question.number_of_object).fill(0).map((_, index) => (
-                                        <Col md={6} key={index}>
-                                            <Card.Img className='mx-auto d-block' variant="center" src={(splitImagePath(question.image_path))} style={{height:"160px", width:"30%"}}/>
-                                            <hr></hr>
-                                        </Col>
-                                    ))}
-                                </Row>
-                            </Card>
-                        </Col>
-                    ))
-                    
-                    } */}

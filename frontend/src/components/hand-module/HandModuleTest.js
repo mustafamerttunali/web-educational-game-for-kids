@@ -118,14 +118,16 @@ export default function HandModuleTest() {
                             }}
                             />
                             {emoji !== null ? (
-                            <Card.Img
-                                src={images[emoji]}
-                                style={{
-                                textAlign: "center",
-                                height: 150,
-                                width: "100%",
-                                }}
-                            />
+                                <Row className='d-flex justify-content-center'>
+                                    <Card.Img
+                                        src={images[emoji]}
+                                        style={{
+                                        textAlign: "center",
+                                        height: 150,
+                                        width: "50%",
+                                        }}
+                                    />
+                                </Row>
                             ) : (
                             ""
                             )}
