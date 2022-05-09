@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from "react";
 import * as tf from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/handpose";
 import Webcam from "react-webcam";
-import {Container, Row, Col} from "react-bootstrap";
+import {Container, Row, Col, Card } from "react-bootstrap";
 import { drawHand } from "./utilities";
 
 import * as fp from "fingerpose";
@@ -66,7 +66,7 @@ export default function HandModuleTest() {
 
                 if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
                     let decisionGestureName = undefined;
-                    console.log(gesture.gestures)
+                    // console.log(gesture.gestures)
                     // console.log(arr)
                     const maxConfidence = gesture.gestures.reduce(
                         (acc, curr) => (acc.score > curr.score ? acc : curr),
@@ -109,29 +109,21 @@ export default function HandModuleTest() {
                             <canvas
                             ref={canvasRef}
                             style={{
-                                position: "absolute",
-                                marginLeft: "auto",
-                                marginRight: "auto",
                                 left: 0,
                                 right: 0,
                                 textAlign: "center",
                                 zindex: 9,
-                                width: 640,
-                                height: 480,
+                                width: 320,
+                                height: 240,
                             }}
                             />
                             {emoji !== null ? (
-                            <img
+                            <Card.Img
                                 src={images[emoji]}
                                 style={{
-                                position: "absolute",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                                left: 400,
-                                bottom: 500,
-                                right: 0,
                                 textAlign: "center",
-                                height: 100,
+                                height: 150,
+                                width: "100%",
                                 }}
                             />
                             ) : (

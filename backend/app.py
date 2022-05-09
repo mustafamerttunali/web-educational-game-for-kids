@@ -95,6 +95,7 @@ def count_game():
             number_of_questions = 24 #look here
             questions = dict()
             counter = 4
+            # TODO: Fix counter problem.
             for i in range(1, number_of_questions):
                 if user_answers[str(i)] == None or user_answers[str(i)] == False:
                     number_of_object = random.randint(1, 5)
@@ -105,7 +106,6 @@ def count_game():
                 if counter == 0:
                     questions["status"] = 200
                     break
-            
             questions["player"] = user['child_first_name'] + " " + user['child_last_name']
             return json.loads(dumps(questions))
         except:
@@ -123,20 +123,20 @@ def math_game():
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
 
             # Check answered number of questions
-            unanswred_questions = 0
+            unanswered_questions = 0
             for i in range(1, 31):
                 if user_answers["q" + str(i)] == None:
-                    unanswred_questions += 1
+                    unanswered_questions += 1
 
-            if unanswred_questions == 0:
+            if unanswered_questions == 0:
                 return jsonify({"status": 200, "result": "1"})
 
             # Create math question
-            if unanswred_questions > 4:
+            if unanswered_questions > 4:
                 show_question_number = 4
 
             else:
-                show_question_number = unanswred_questions
+                show_question_number = unanswered_questions
 
             questions = dict()
 

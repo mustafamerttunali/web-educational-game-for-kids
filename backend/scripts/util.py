@@ -5,8 +5,8 @@ def count_game_questions(mongo):
     os.chdir("../")
     current_directory = os.getcwd()
     
-    IMAGES_DIR_PATH = current_directory + "/frontend/src/images"
-    SOUNDS_DIR_PATH = current_directory + "/frontend/src/sounds"
+    IMAGES_DIR_PATH = current_directory + "/frontend/public/images"
+    SOUNDS_DIR_PATH = current_directory + "/frontend/public/sounds"
 
     IMAGES_DIRECTORY = os.listdir(IMAGES_DIR_PATH)
     SOUNDS_DIRECTORY =  os.listdir(SOUNDS_DIR_PATH)
