@@ -87,10 +87,10 @@ def dashboard():
 @app.route('/count-game', methods=['GET', 'POST'])
 @jwt_required()
 def count_game():
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
     if request.method == "GET":
         try:
-            user_id = get_jwt_identity()
-            user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
             number_of_questions = 24 #look here
             max_shown_questions = 4
@@ -125,8 +125,31 @@ def count_game():
             return json.loads(dumps(questions))
         except:
             return jsonify({"status": 401})
+
     elif request.method == "POST":
-        return
+        try:
+            results = request.json
+            number_of_questions = 24 #look here
+
+            # Set user answers
+            for key, value in results.items():
+                name = value["name"]
+                number_of_objects = value["number_of_objects"]
+                result = value["result"]
+
+                mongo.db.count_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {key: bool(result)}})
+
+            # Upadate correct number of answers
+            correct_answers = 0
+            for i in range(1, number_of_questions + 1):
+                if mongo.db.count_game_answers.find_one({'user': ObjectId(user_id), str(i): True}):
+                    correct_answers += 1
+            
+            mongo.db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {'correct_answer': correct_answers}})
+            return jsonify({"status": 200})
+
+        except:
+            return jsonify({"status": 401})
 
     else:
         return jsonify({"status": 401})
