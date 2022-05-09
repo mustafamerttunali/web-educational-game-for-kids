@@ -19,7 +19,7 @@ export default function HandModuleTest() {
         const webcamRef = useRef(null);
         const canvasRef = useRef(null);
         const [emoji, setEmoji] = useState(null);
-        const images = { one: one, two: two, three:three, four: four, five: five };
+        const images = { one: one, two: two, three:three, four: four, five: five, undefined: null };
 
         const runHandpose = async () => {
             const net = await handpose.load();
@@ -74,12 +74,16 @@ export default function HandModuleTest() {
                     );
                     decisionGestureName = maxConfidence.name;
                     if (decisionGestureName !== undefined){
-                        setEmoji(decisionGestureName) 
+                        setEmoji(decisionGestureName)
                     } else{
-                        setEmoji(null)
+                        setEmoji(undefined)
                     }
                 }
               }
+              else
+                {
+                    setEmoji(null)
+                }
               const ctx = canvasRef.current.getContext("2d");
               drawHand(hand, ctx);
             }

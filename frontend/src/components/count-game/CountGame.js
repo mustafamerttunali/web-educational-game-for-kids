@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Row, Col, Card, Button } from 'react-bootstrap'
+import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap'
 import HandModuleTest from '../hand-module/HandModuleTest';
 
 import SecretNav from '../secret-nav/SecretNav'
@@ -12,6 +12,7 @@ export default function CountGame() {
     const [user, setUser] = useState("");
     const [questions, setQuestions] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [buttonText, setButtonText] = useState("Next Question");
 
     const splitImagePath = (imagePath) => {
         const split = imagePath.split("/");
@@ -47,6 +48,13 @@ export default function CountGame() {
 
     const handleNextQuestion = () => {
         setCurrentQuestion(prevState => prevState + 1);
+        if(currentQuestion === questions.length - 2 ){
+            setButtonText("Finish");
+        }
+        else if(currentQuestion === questions.length - 1){
+            alert("Game Over");
+            // TODO: Post the answers to the backend
+        }
     }
 
   return (
@@ -66,7 +74,7 @@ export default function CountGame() {
                 <Col md={8}>
 
                 {
-                    questions.length > 0 && questions[currentQuestion] &&
+                    questions.length > 0 && questions[currentQuestion] !== undefined ? (
                     <Col md={12}>
                             <Card>
                                 <h1>Q:{questions[currentQuestion].number} How many <strong>{questions[currentQuestion].name}</strong> in the picture? :{questions[currentQuestion].number_of_object}</h1>
@@ -79,7 +87,21 @@ export default function CountGame() {
                                     ))}
                                 </Row>
                             </Card>
-                        </Col>
+                        </Col>) : (
+                        currentQuestion === questions.length ? (
+                            <div>
+                                <br></br>
+                                <Alert variant="info">
+                                    <Alert.Heading className='text-center'>
+                                        There are no question available for that game.
+                                    </Alert.Heading>
+                                </Alert>
+                            </div>
+                    ) : (
+                        <h1>Loading...</h1> 
+                        // TODO: Check if there are questions available
+                        )
+                    )
                 }
 
                 </Col>
@@ -88,10 +110,10 @@ export default function CountGame() {
                         <Card.Body>
                             <HandModuleTest/>
                             <br></br>
-                            <Button variant="primary" onClick={() => {
+                            <Button variant="outline-primary" size="lg" onClick={() => {
                                 handleNextQuestion()
                                 
-                            }}> Next Question</Button>
+                            }}> {buttonText}</Button>
                         </Card.Body>
                     </Card>
                 </Col>
