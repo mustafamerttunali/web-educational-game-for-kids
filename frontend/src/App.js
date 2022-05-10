@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Components
@@ -14,7 +14,11 @@ import Logout from "./components/logout/Logout";
 import HandModuleTest from "./components/hand-module/HandModuleTest";
 import CountGame from "./components/count-game/CountGame";
 
+import { GestureContext } from "./components/hand-module/GestureContext";
+
 function App() {
+  const value = React.useState(null);
+
   return (
     <div>
       <br></br>
@@ -27,7 +31,11 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/count-game" element={<CountGame />} />
+            <Route path="/count-game" element={
+              <GestureContext.Provider value={value}>
+                  <CountGame />
+              </GestureContext.Provider>
+              } />
         </Routes>
       </Router>
       <br></br>

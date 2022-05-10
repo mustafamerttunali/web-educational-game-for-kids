@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { GestureContext } from "./GestureContext";
 
 import * as tf from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/handpose";
@@ -18,8 +19,9 @@ import { OneGesture, TwoGesture, ThreeGesture, FourGesture, FiveGesture } from '
 export default function HandModuleTest() {
         const webcamRef = useRef(null);
         const canvasRef = useRef(null);
-        const [emoji, setEmoji] = useState(null);
+        const [emoji, setEmoji] = React.useContext(GestureContext);
         const images = { one: one, two: two, three:three, four: four, five: five, undefined: null };
+    
 
         const runHandpose = async () => {
             const net = await handpose.load();
@@ -61,7 +63,7 @@ export default function HandModuleTest() {
                   FiveGesture
                 ]);
 
-                const MAX_THRESHOLD = 7;
+                const MAX_THRESHOLD = 9;
                 const gesture = await GE.estimate(hand[0].landmarks, MAX_THRESHOLD);
 
                 if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
@@ -98,28 +100,28 @@ export default function HandModuleTest() {
                 <Container>
                     <Row>
                         <Col>
-                            <Webcam
-                                ref={webcamRef}
+                            <Row className='d-flex justify-content-center'>
+                                <Webcam
+                                    ref={webcamRef}
+                                    style={{
+                                        textAlign: "center",
+                                        zindex: 9,
+                                        width: 320,
+                                        height: 240,
+                                    }}
+                                />
+                            </Row>
+
+                            <canvas
+                                ref={canvasRef}
                                 style={{
                                     left: 0,
                                     right: 0,
-                                    textAlign: "left",
+                                    textAlign: "center",
                                     zindex: 9,
                                     width: 320,
                                     height: 240,
                                 }}
-                            />
-
-                            <canvas
-                            ref={canvasRef}
-                            style={{
-                                left: 0,
-                                right: 0,
-                                textAlign: "center",
-                                zindex: 9,
-                                width: 320,
-                                height: 240,
-                            }}
                             />
                             {emoji !== null ? (
                                 <Row className='d-flex justify-content-center'>
@@ -127,7 +129,7 @@ export default function HandModuleTest() {
                                         src={images[emoji]}
                                         style={{
                                         textAlign: "center",
-                                        height: 150,
+                                        height: 100,
                                         width: "50%",
                                         }}
                                     />

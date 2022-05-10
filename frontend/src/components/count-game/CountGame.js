@@ -1,18 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap'
 import HandModuleTest from '../hand-module/HandModuleTest';
+import { GestureContext } from '../hand-module/GestureContext';
 
 import SecretNav from '../secret-nav/SecretNav'
 
-// import Question from './Question';
+import Question from './Question';
 
 const API = process.env.REACT_APP_API;
 
 export default function CountGame() {
     const [user, setUser] = useState("");
     const [questions, setQuestions] = useState([]);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [buttonText, setButtonText] = useState("Next Question");
+    const [infoHand, setInfoHand] = useState("");
+    const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+    const [isAnswered, setIsAnswered] = useState(false);
+    const [timer, setTimer] = useState(0);
+    const [gesture] = React.useContext(GestureContext);
+
+    const numberHash = { one: 1, two: 2, three: 3, four: 4, five: 5 };
+    const answers = {
+        1:{
+            "name": null,
+            "number_of_object": null,
+            "result": null,
+            },
+        }
 
     const splitImagePath = (imagePath) => {
         const split = imagePath.split("/");
@@ -28,13 +44,14 @@ export default function CountGame() {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
                 }
-                });
+            });
             const data = await response.json();
-            console.log(data)
+            setCurrentQuestion(data[currentQuestionIndex].number_of_object);
             setUser(data["player"]);
             const keys = Object.keys(data).filter(key => typeof data[key] === 'object');
             for(let i = 0; i < keys.length; i++){
                 let key = keys[i];
+                console.log(data[key])
                 setQuestions(prevState => [...prevState, data[key]]);
             }
         }
@@ -44,17 +61,76 @@ export default function CountGame() {
     }
     useEffect(() => {
         getQuestions()
-    }, []);
+    }, [])
+
+    useEffect(() => {
+        const userAnswer = numberHash[gesture];
+        setIsAnswerCorrect(false);
+        setIsAnswered(false);
+        setTimer("");
+        
+        let count = 2;
+        if(gesture === null || gesture === undefined){
+            setInfoHand("Hand is not detected!");
+            setIsAnswered(false);
+            return;
+        }
+        else{
+            setInfoHand("Getting your answer... Please hold your hand!");
+        }
+
+        const interval = setInterval(() => {
+            if(count === 0){
+                clearInterval(interval);
+                if(userAnswer === currentQuestion){
+                    setIsAnswerCorrect(true);
+                    setInfoHand("Congrats! Your answer is correct! Redirecting to next question...");
+                    handleNextQuestion();
+                    // TODO: Add correct answers to state with question number
+                }
+                else{
+                    setIsAnswerCorrect(false);
+                    setInfoHand("Sorry! Your answer is incorrect! Redirecting to next question...");
+                }
+                setIsAnswered(true);
+                // answers[currentQuestionIndex] = {
+                //     "name": questions[currentQuestionIndex].name,
+                //     "number_of_object": questions[currentQuestionIndex].number_of_object,
+                //     "result": isAnswerCorrect,
+                // }
+            }
+            else{
+                setTimer(count);
+                count--;
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [gesture])
+
+    useEffect(() => {
+        try {
+            setCurrentQuestion(questions[currentQuestionIndex].number_of_object);
+        } catch (error) {
+            
+        }
+    }, [currentQuestionIndex])
 
     const handleNextQuestion = () => {
-        setCurrentQuestion(prevState => prevState + 1);
-        if(currentQuestion === questions.length - 2 ){
+        setCurrentQuestionIndex(prevState => prevState + 1);
+        
+        if(currentQuestionIndex === questions.length - 2 ){
             setButtonText("Finish");
         }
-        else if(currentQuestion === questions.length - 1){
-            alert("Game Over");
+        else if(currentQuestionIndex === questions.length - 1){
+            alert("Game Over"); // TODO: Modal component, show how many questions user got correct
+            console.log(answers)
+            // setTimeout(() => {
+            //     window.location.href = '/dashboard';
+            //   }
+            //   , 1500);
             // TODO: Post the answers to the backend
         }
+        setCurrentQuestion(questions[currentQuestionIndex].number_of_object);
     }
 
   return (
@@ -69,26 +145,45 @@ export default function CountGame() {
                 <Col md={12}>
                     <Card className="text-center">
                         <Card.Header>Player: <strong>{user}</strong></Card.Header>
+                        <Card.Body>
+                                {
+
+                                    isAnswered ?
+                                        (
+                                       isAnswerCorrect ?
+                                            <Alert variant="success">
+                                                {infoHand}
+                                            </Alert>
+                                        :
+                                            <Alert variant="danger">
+                                                {infoHand}
+                                            </Alert>
+                                        )
+                                    :
+                                        (
+                                            gesture === null ? (
+                                                <Alert  variant={"warning"}>
+                                                    {infoHand}
+                                                </Alert>
+                                            ) : (
+                                                <Alert  variant={"primary"}>
+                                                    {infoHand}: {timer}
+                                                </Alert>
+                                            )
+                                        )
+                                }
+                        </Card.Body>
                     </Card>
                 </Col>
                 <Col md={8}>
 
                 {
-                    questions.length > 0 && questions[currentQuestion] !== undefined ? (
-                    <Col md={12}>
-                            <Card>
-                                <h1>Q:{questions[currentQuestion].number} How many <strong>{questions[currentQuestion].name}</strong> in the picture? :{questions[currentQuestion].number_of_object}</h1>
-                                <Row>
-                                    {Array(questions[currentQuestion].number_of_object).fill(0).map((_, index) => (
-                                        <Col md={6} key={index}>
-                                            <Card.Img className='mx-auto d-block' variant="center" src={(splitImagePath(questions[currentQuestion].image_path))} style={{height:"160px", width:"30%"}}/>
-                                            <hr></hr>
-                                        </Col>
-                                    ))}
-                                </Row>
-                            </Card>
-                        </Col>) : (
-                        currentQuestion === questions.length ? (
+                    questions.length > 0 && questions[currentQuestionIndex] !== undefined ? (
+                        <Question   questions={questions} 
+                                    currentQuestionIndex={currentQuestionIndex}
+                                    splitImagePath={splitImagePath}/>
+                        ) : (
+                        currentQuestionIndex === questions.length ? (
                             <div>
                                 <br></br>
                                 <Alert variant="info">
@@ -112,7 +207,6 @@ export default function CountGame() {
                             <br></br>
                             <Button variant="outline-primary" size="lg" onClick={() => {
                                 handleNextQuestion()
-                                
                             }}> {buttonText}</Button>
                         </Card.Body>
                     </Card>
