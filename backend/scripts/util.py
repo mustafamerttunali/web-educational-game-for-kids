@@ -66,7 +66,31 @@ def set_count_game_answers(mongo, user_id):
         '22': None,
         '23': None,
         '24': None,
-        'correct_answer': 0
+        'stats1': None,
+        'stats2': None,
+        'stats3': None,
+        'stats4': None,
+        'stats5': None,
+        'stats6': None,
+        'stats7': None,
+        'stats8': None,
+        'stats9': None,
+        'stats10': None,
+        'stats11': None,
+        'stats12': None,
+        'stats13': None,
+        'stats14': None,
+        'stats15': None,
+        'stats16': None,
+        'stats17': None,
+        'stats18': None,
+        'stats19': None,
+        'stats20': None,
+        'stats21': None,
+        'stats22': None,
+        'stats23': None,
+        'stats24': None,
+        'correct_answer_number': 0
     })
 
 def set_math_game_answers(mongo, user_id):
@@ -132,7 +156,7 @@ def set_math_game_answers(mongo, user_id):
         'a28': None,
         'a29': None,
         'a30': None,
-        'correct_answer': 0
+        'answered_question_number': 0
     })
 
 def create_math_question():
