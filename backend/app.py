@@ -1,19 +1,22 @@
-
 from flask import Flask, request, redirect, url_for, flash, jsonify
 from flask_pymongo import PyMongo
 from flask_mail import Mail, Message
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
-from datetime import datetime
+from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question
+from report.reporting import create_report
 import random
 import json
 
+TOKEN_EXPIRE_TIME = 2 # HOURS
+
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=TOKEN_EXPIRE_TIME)
 
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
@@ -78,6 +81,10 @@ def dashboard():
     try:
         user_id = get_jwt_identity()
         user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+
+        print("SELAMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
+        create_report(mongo, user_id)
+
         return jsonify({"status": 200,
                        "child_first_name": user['child_first_name'] + " " + user['child_last_name'],
                     })
@@ -89,10 +96,11 @@ def dashboard():
 def count_game():
     user_id = get_jwt_identity()
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    number_of_questions = mongo.db.count_game_questions.count_documents({})
+
     if request.method == "GET":
         try:
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
-            number_of_questions = 24 #look here
             max_shown_questions = 4
             questions = dict()
 
@@ -106,18 +114,18 @@ def count_game():
 
             if unanswered_questions > max_shown_questions:
                 show_question_number = max_shown_questions
-
             else:
                 show_question_number = unanswered_questions
 
             counter = 0
-            for i in range(1, number_of_questions):
+            for i in range(1, number_of_questions + 1):
                 if user_answers[str(i)] == None or user_answers[str(i)] == False:
                     number_of_object = random.randint(1, 5)
                     question = mongo.db.count_game_questions.find_one({'number': i})
                     question["number_of_object"] = number_of_object
                     questions[str(counter)] = question
                     counter += 1
+
                 if counter == show_question_number:
                     questions["status"] = 200
                     break
@@ -129,23 +137,64 @@ def count_game():
     elif request.method == "POST":
         try:
             results = request.json
-            number_of_questions = 24 #look here
+            correct_answer_number = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})["correct_answer_number"]
 
             # Set user answers
             for key, value in results.items():
                 name = value["name"]
-                number_of_objects = value["number_of_objects"]
+                correct_answer = value["correct_answer"]
+                user_answer = value["user_answer"]
                 result = value["result"]
 
-                mongo.db.count_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {key: bool(result)}})
+                # If user answer is correct
+                if result == 1:
+                    correct_answer_number += 1
+                    
+                    mongo.db.count_game_answers.update_one(
+                        {'user': ObjectId(user_id)},
+                        {'$set': {key: True}}
+                    )
+
+                # If user answer is incorrect
+                elif result == 0:
+                    mongo.db.count_game_answers.update_one(
+                        {'user': ObjectId(user_id)},
+                        {'$set': {key: False}}
+                    )
+
+                    question_statistics = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})['stats' + str(key)]
+                    number_of_error = len(question_statistics)
+                    number_of_error += 1
+
+                    question_statistics[str(number_of_error)] = {"name": name, "question_number": key, "correct_answer": correct_answer, "user_answer": user_answer}
+                    print(question_statistics)
+
+                    mongo.db.count_game_answers.update_one(
+                        {'user': ObjectId(user_id)},
+                        {'$set': {'stats' + str(key): question_statistics}}
+                    )
+
+                # If user answer is not answered
+                elif result == -1:
+                    mongo.db.count_game_answers.update_one(
+                        {'user': ObjectId(user_id)},
+                        {'$set': {key: None}}
+                    )
+
+                    question_statistics = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})['stats' + str(key)]
+                    number_of_error = len(question_statistics)
+                    number_of_error += 1
+
+                    question_statistics[str(number_of_error)] = {"name": name, "question_number": key, "correct_answer": correct_answer, "user_answer": None}
+                    print(question_statistics)
+
+                    mongo.db.count_game_answers.update_one(
+                        {'user': ObjectId(user_id)},
+                        {'$set': {'stats' + str(key): question_statistics}}
+                    )
 
             # Upadate correct number of answers
-            correct_answers = 0
-            for i in range(1, number_of_questions + 1):
-                if mongo.db.count_game_answers.find_one({'user': ObjectId(user_id), str(i): True}):
-                    correct_answers += 1
-            
-            mongo.db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {'correct_answer': correct_answers}})
+            mongo.db.count_game_answers.update_one({'_id': ObjectId(user_id)}, {'$set': {'correct_answer_number': correct_answer_number}})
             return jsonify({"status": 200})
 
         except:
@@ -213,6 +262,21 @@ def forgot_password():
     mail.send(msg)
 
     flash('Password sent to your email')"""
+
+@app.route('/deneme', methods=['GET'])
+@jwt_required()
+def deneme():
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
+
+    # Check answered number of questions
+    total_question = 24
+    for i in range(1, total_question + 1):
+        example = user_answers["stats" + str(i)]
+        print(example)
+
+    return jsonify({"status": 200})
 
 if __name__ == '__main__':
     app.run(debug=True)
