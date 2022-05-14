@@ -1,5 +1,7 @@
 from bson.objectid import ObjectId
 from fpdf import FPDF
+from matplotlib.pyplot import text
+from more_itertools import first
 
 class Count_Game_PDF(FPDF):
     
@@ -285,65 +287,114 @@ class Math_Game_PDF(FPDF):
 
         reset_x()
         self.cell(cell_w, 15, f'{chapter_name}', align='C', ln=1)
-        self.ln(19)
+        self.ln(10)
 
         self.set_font('Arial', 'B', 12)
         
-        
         datas = []
+
+        reported_question_number = 0
+        reported_question_correct_answers = 0
+        reported_question_wrong_answers = 0
 
         for i in range(1, self.number_of_questions + 1) :
             data = self.user_math_game_answers["q"+str(i)]
             if not data == None :
                 datas.append(data)
-        
-        import pprint
-        pprint.pprint(datas)
-        """
-        for i in range(1, self.number_of_questions + 1) :
-            data = self.user_count_game_answers["stats" + str(i)]
-            if not data == {}:
-                datas.append(data)
 
-        for i in range(1,len(datas)+1) :
+                result = bool(data["result"])
+
+                if result :
+                    reported_question_correct_answers += 1
+                else :
+                    reported_question_wrong_answers += 1
+
+                reported_question_number += 1
+        
+        is_result_head = False
+        i = 1
+        boundary = 4
+        while i <= len(datas):
+
+            if (i == 1 and is_result_head == False):
+                
+                text1 = f"Reported Question Number: {reported_question_number}"
+                text2 = f"Correct Answers: {reported_question_correct_answers}"
+                text3 = f"Wrong Answers: {reported_question_wrong_answers}"
+                text4 = f"Total Score: {round(reported_question_correct_answers * 100 / reported_question_number, 2)}%"
+
+                cell_pad = 5
+                pad_x = self.get_string_width(text2)
+                pad_y = 10
+                border = 0
+
+                self.set_text_color(0,0,0)
+                self.set_font('Arial', 'I', 15)
+                self.cell(cell_pad)
+                self.cell(pad_x, pad_y, f'{text1}', align='L', ln=1, border=border)
+
+                self.cell(cell_pad)
+                self.cell(pad_x, pad_y, f'{text2}', align='L', ln=1, border=border)
+
+                self.cell(cell_pad)
+                self.cell(pad_x, pad_y, f'{text3}', align='L', ln=1, border=border)
+
+                self.cell(cell_pad)
+                self.cell(pad_x, pad_y, f'{text4}', align='L', ln=1, border=border)
+
+                self.ln(15)
+
+                is_result_head = False
             
             data = datas[i-1]
 
-            info_texts = ""
+            correct_answer = data["correct_answer"]
+            first_number = data["first_number"]
+            second_number = data["second_number"]
+            operator = "x" if data["operator"] == "*" else data["operator"]
+            result = data["result"]
+            user_answer = data["user_answer"]
 
-            for j in range(1,len(data)+1) :
+            text1 = f"Question {i}"
+            text2 = f"This question answered " + ("correctly" if bool(result) else "incorrectly" + "!")
+            text3 = f"{first_number} {operator} {second_number} = {correct_answer}"
+            text4 = "" if bool(result) else f"User answer: {user_answer}"
 
-                error = data[str(j)]
+            resultTextColor = (0,255,0) if bool(result) else (255,0,0)
+            cell_pad = 10
+            pad_x = self.get_string_width(text2)
+            pad_y = 7
+            border = 0
 
-                error_no        = j
-                object_name     = error["name"]
-                correct_answer  = error["correct_answer"]
-                user_answer     = error["user_answer"]
+            self.set_text_color(0,0,0)
+            self.set_font('Arial', 'B', 16)
+            self.cell(cell_pad)
+            self.cell(pad_x, pad_y, f'{text1}', align='L', ln=1, border=border)
 
-                text = f"                {error_no}.     Correct Answer:   {correct_answer}          User Answer:   {user_answer}"
-            
-                info_texts += (text+"\n")
-            
-            info_texts = info_texts[:-1]
-            
-            for a in range(5-info_texts.count("\n")) :
-                info_texts += "\n"
+            self.set_text_color(*resultTextColor)
+            self.set_font('Arial', 'I', 12)
+            self.cell(cell_pad)
+            self.cell(pad_x, pad_y, f'{text2}', align='L', ln=1, border=border)
 
-            reset_x()
-            self.multi_cell(cell_w, 7, f'{info_texts}', align='C')
+            self.set_text_color(0,0,255)
+            self.set_font('Times', 'B', 16)
+            self.cell(cell_pad)
+            self.cell(pad_x, pad_y, f'{text3}', align='L', ln=1, border=border)
 
-            self.image(f"report/images/{object_name}.jpg", x=image_x, y=image_y, w=32, h=32)
-
-            if (i % 4 == 0) :
-                if (i != len(datas)) :
-                    self.add_page()
-                    self.ln(19)
-                    image_y = 0
+            self.set_text_color(0,0,0)
+            self.set_font('Arial', 'BU', 14)
+            self.cell(cell_pad)
+            self.cell(pad_x, pad_y, f'{text4}', align='L', ln=1, border=border)
 
             self.ln(15)
 
-            image_y += 50
-        """
+            if (i == boundary) :
+                if (i != len(datas)) :
+                    self.add_page()
+                    self.ln(30)
+                boundary+=5
+
+            i+=1
 
 def count_game_reporting(mongo, user_id) :
     try :
@@ -356,6 +407,7 @@ def count_game_reporting(mongo, user_id) :
         pdf.output("user_reports/count_game_" + str(user_id) + ".pdf")    
     except Exception as e :
         print(e)
+        print("Error in count game reporting")
 
 def math_game_reporting(mongo, user_id) :
     try :
@@ -368,3 +420,4 @@ def math_game_reporting(mongo, user_id) :
         pdf.output("user_reports/math_game_" + str(user_id) + ".pdf")    
     except Exception as e :
         print(e)
+        print("Error in math_game_reporting")
