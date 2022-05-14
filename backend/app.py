@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from bson.json_util import dumps
-from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question
+from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question, send_count_game_report, send_math_game_report
 from report.reporting import count_game_reporting, math_game_reporting
 import random
 import json
@@ -29,6 +29,21 @@ CORS(app)
 if  mongo.db.count_game_questions.find_one():
     mongo.db.count_game_questions.drop()
 count_game_questions(mongo)
+
+def create_report_and_send_mail(user_id, report_type):
+    try:
+        user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+        if report_type == "count_game":
+            count_game_reporting(mongo, user_id)
+            send_count_game_report(app, mail, user)
+        elif report_type == "math_game":
+            math_game_reporting(mongo, user_id)
+            send_math_game_report(app, mail, user)
+        else:
+            print("Invalid report type")
+
+    except Exception as e:
+        print(e)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -140,7 +155,6 @@ def count_game():
     elif request.method == "POST":
         try:
             results = request.json
-            print(results)
             correct_answer_number = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})["correct_answer_number"]
 
             # Set user answers
@@ -196,6 +210,10 @@ def count_game():
                         {'$set': {'stats' + str(key): question_statistics}}
                     )
 
+            # Create report and send mail if game is finished
+            if correct_answer_number == number_of_questions:
+                create_report_and_send_mail(user_id, "count_game")
+
             # Upadate correct number of answers
             mongo.db.count_game_answers.update_one({'_id': ObjectId(user_id)}, {'$set': {'correct_answer_number': correct_answer_number}})
             return jsonify({"status": 200})
@@ -245,7 +263,6 @@ def math_game():
         except:
             return jsonify({"status": 401})
             
-
     elif request.method == "POST":
         try:
             if not user_answers:
@@ -282,7 +299,10 @@ def math_game():
                     {'$set': {'a' + str(answered_question_number): bool(result)}}
                 )
 
-            print(answered_question_number)
+            # Create report and send mail if game is finished
+            if answered_question_number == TOTAL_QUESTION_NUMBER:
+                create_report_and_send_mail(user_id, "math_game")
+
             # Upadate answered number of questions
             mongo.db.math_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
             return jsonify({"status": 200})
@@ -313,8 +333,7 @@ def forgot_password():
 def deneme():
     user_id = get_jwt_identity()
     
-    #count_game_reporting(mongo, user_id)
-    math_game_reporting(mongo, user_id)
+    create_report_and_send_mail(user_id, "math_game")
 
     return jsonify({"status": 200})
 
