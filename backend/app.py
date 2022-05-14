@@ -250,10 +250,12 @@ def math_game():
             return jsonify({"status": 401})
 
     elif request.method == "POST":
+        if not user_answers:
+                set_math_game_answers(mongo, ObjectId(user_id))
+                user_answers = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})
         
         results = request.json
-        print("Results:", results)
-        answered_question_number = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})["answered_question_number"]
+        answered_question_number = user_answers["answered_question_number"]
         
         # Set user answers
         for key, value in results.items():
@@ -264,34 +266,27 @@ def math_game():
             user_answer = value["user_answer"]
             result = value["result"]
 
-            for i in range(1, TOTAL_QUESTION_NUMBER + 1):
-                if len(user_answers["q" + str(i)]) == 0:
-                    print(user_answers["q" + str(i)], type(user_answers["q" + str(i)]))
-                    print("GIRDIM")
-                    answered_question_number += 1
-                    mongo.db.math_game_answers.update_one(
-                        {'user': ObjectId(user_id)},
-                        {'$set': {'q' + str(i): {
-                            "first_number": first_number, 
-                            "second_number": second_number, 
-                            "operator": operator, 
-                            "correct_answer": correct_answer, 
-                            "user_answer": user_answer, 
-                            "result": result}}}
-                    )
-                    print("q" + str(i))
+            answered_question_number += 1
+            mongo.db.math_game_answers.update_one(
+                {'user': ObjectId(user_id)},
+                {'$set': {'q' + str(answered_question_number): {
+                    "first_number": first_number, 
+                    "second_number": second_number, 
+                    "operator": operator, 
+                    "correct_answer": correct_answer, 
+                    "user_answer": user_answer, 
+                    "result": bool(result)}}}
+            )
 
-                    # mongo.db.math_game_answers.update_one(
-                    #     {'user': ObjectId(user_id)},
-                    #     {'$set': {'a' + str(i): bool(result)}}
-                    # )
-                break
-        
+            mongo.db.math_game_answers.update_one(
+                {'user': ObjectId(user_id)},
+                {'$set': {'a' + str(answered_question_number): bool(result)}}
+            )
+
+        print(answered_question_number)
         # Upadate answered number of questions
-        mongo.db.math_game_answers.update_one({'_id': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
+        mongo.db.math_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
         return jsonify({"status": 200})
-
-        
 
     else:  
         return jsonify({"status": 401})
@@ -318,11 +313,16 @@ def deneme():
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
     user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
 
-    # Check answered number of questions
-    total_question = 24
-    for i in range(1, total_question + 1):
-        example = user_answers["stats" + str(i)]
-        print(example)
+    mongo.db.math_game_answers.update_one(
+                        {'user': ObjectId(user_id)},
+                        {'$set': {'q' + str(2): {
+                            "first_number": 1, 
+                            "second_number": 1, 
+                            "operator": "*", 
+                            "correct_answer": 1, 
+                            "user_answer": 1, 
+                            "result": True}}}
+                    )
 
     return jsonify({"status": 200})
 
