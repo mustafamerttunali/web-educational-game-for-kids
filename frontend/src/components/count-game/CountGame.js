@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useReducer } from 'react'
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap'
 import HandModuleTest from '../hand-module/HandModuleTest';
 import { GestureContext } from '../hand-module/GestureContext';
+import { sendAnswers } from './SendAnswers';
 
 import SecretNav from '../secret-nav/SecretNav'
 
@@ -15,20 +16,17 @@ export default function CountGame() {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [buttonText, setButtonText] = useState("Next Question");
+    const [userAnswers, setUserAnswers] = useState("");
     const [infoHand, setInfoHand] = useState("");
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
     const [isAnswered, setIsAnswered] = useState(false);
     const [timer, setTimer] = useState(0);
     const [gesture] = React.useContext(GestureContext);
 
+    const [coldStart, setColdStart] = useState(false);
+
     const numberHash = { one: 1, two: 2, three: 3, four: 4, five: 5 };
-    const answers = {
-        1:{
-            "name": null,
-            "number_of_object": null,
-            "result": null,
-            },
-        }
+
 
     const splitImagePath = (imagePath) => {
         const split = imagePath.split("/");
@@ -46,18 +44,28 @@ export default function CountGame() {
                 }
             });
             const data = await response.json();
+            console.log(data)
             setCurrentQuestion(data[currentQuestionIndex].number_of_object);
             setUser(data["player"]);
             const keys = Object.keys(data).filter(key => typeof data[key] === 'object');
             for(let i = 0; i < keys.length; i++){
                 let key = keys[i];
-                console.log(data[key])
-                setQuestions(prevState => [...prevState, data[key]]);
+                setQuestions(prevState => [...prevState, data[key]])
+
+                // setUserAnswers(prevState => {
+                //     return {...prevState, [key]: {
+                //         "name": data[key].name,
+                //         "correct_answer": data[key].number_of_object,
+                //         "user_answer": null,
+                //         "result": isAnswerCorrect,
+                //     }}
+                // })
             }
         }
         catch(error){
             console.log(error);
         }
+        setColdStart(true);
     }
     useEffect(() => {
         getQuestions()
@@ -79,25 +87,40 @@ export default function CountGame() {
             setInfoHand("Getting your answer... Please hold your hand!");
         }
 
-        const interval = setInterval(() => {
+        const interval = setInterval(async () => {
             if(count === 0){
                 clearInterval(interval);
                 if(userAnswer === currentQuestion){
                     setIsAnswerCorrect(true);
                     setInfoHand("Congrats! Your answer is correct! Redirecting to next question...");
+                    setUserAnswers(prevState => {
+                        return {
+                            ...prevState, [questions[currentQuestionIndex].number]: {
+                                "name": questions[currentQuestionIndex].name,
+                                "correct_answer": questions[currentQuestionIndex].number_of_object,
+                                "user_answer": userAnswer,
+                                "result": true,
+                            }
+                        };
+                    })
                     handleNextQuestion();
-                    // TODO: Add correct answers to state with question number
                 }
                 else{
                     setIsAnswerCorrect(false);
                     setInfoHand("Sorry! Your answer is incorrect! Redirecting to next question...");
+                    setUserAnswers(prevState => {
+                        return {
+                            ...prevState, [questions[currentQuestionIndex].number]: {
+                                "name": questions[currentQuestionIndex].name,
+                                "correct_answer": questions[currentQuestionIndex].number_of_object,
+                                "user_answer": userAnswer,
+                                "result": false,
+                            }
+                        };
+                    })
+                    handleNextQuestion()
                 }
                 setIsAnswered(true);
-                // answers[currentQuestionIndex] = {
-                //     "name": questions[currentQuestionIndex].name,
-                //     "number_of_object": questions[currentQuestionIndex].number_of_object,
-                //     "result": isAnswerCorrect,
-                // }
             }
             else{
                 setTimer(count);
@@ -108,29 +131,24 @@ export default function CountGame() {
     }, [gesture])
 
     useEffect(() => {
-        try {
-            setCurrentQuestion(questions[currentQuestionIndex].number_of_object);
-        } catch (error) {
-            
+        if(currentQuestionIndex === questions.length){
+            if(coldStart){
+                sendAnswers(userAnswers);
+            }
+        }else{
+            try {
+                setCurrentQuestion(questions[currentQuestionIndex].number_of_object);
+            } catch (error) {
+                
+            }
         }
     }, [currentQuestionIndex])
 
     const handleNextQuestion = () => {
-        setCurrentQuestionIndex(prevState => prevState + 1);
-        
+        setCurrentQuestionIndex(prevState => prevState + 1)
         if(currentQuestionIndex === questions.length - 2 ){
             setButtonText("Finish");
         }
-        else if(currentQuestionIndex === questions.length - 1){
-            alert("Game Over"); // TODO: Modal component, show how many questions user got correct
-            console.log(answers)
-            // setTimeout(() => {
-            //     window.location.href = '/dashboard';
-            //   }
-            //   , 1500);
-            // TODO: Post the answers to the backend
-        }
-        setCurrentQuestion(questions[currentQuestionIndex].number_of_object);
     }
 
   return (
@@ -216,3 +234,20 @@ export default function CountGame() {
     </div>
   )
 }
+
+// try{
+//     fetch(API + '/count-game', {
+//         method: 'POST',
+//         headers: {
+//             Authorization: 'Bearer ' + localStorage.getItem('token'),
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(userAnswers)
+//     }).then(res => res.json()).then(data => {
+//         console.log(data);
+//     }
+//     )
+// }
+// catch(error){
+//     console.log(error);
+// }          

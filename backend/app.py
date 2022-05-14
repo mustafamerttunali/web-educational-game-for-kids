@@ -140,6 +140,7 @@ def count_game():
     elif request.method == "POST":
         try:
             results = request.json
+            print(results)
             correct_answer_number = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})["correct_answer_number"]
 
             # Set user answers
@@ -150,7 +151,7 @@ def count_game():
                 result = value["result"]
 
                 # If user answer is correct
-                if result == 1:
+                if result:
                     correct_answer_number += 1
                     
                     mongo.db.count_game_answers.update_one(
@@ -159,7 +160,7 @@ def count_game():
                     )
 
                 # If user answer is incorrect
-                elif result == 0:
+                elif result == False:
                     mongo.db.count_game_answers.update_one(
                         {'user': ObjectId(user_id)},
                         {'$set': {key: False}}
@@ -170,7 +171,6 @@ def count_game():
                     number_of_error += 1
 
                     question_statistics[str(number_of_error)] = {"name": name, "question_number": key, "correct_answer": correct_answer, "user_answer": user_answer}
-                    print(question_statistics)
 
                     mongo.db.count_game_answers.update_one(
                         {'user': ObjectId(user_id)},
@@ -178,7 +178,7 @@ def count_game():
                     )
 
                 # If user answer is not answered
-                elif result == -1:
+                elif result == None:
                     mongo.db.count_game_answers.update_one(
                         {'user': ObjectId(user_id)},
                         {'$set': {key: None}}
