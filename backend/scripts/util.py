@@ -180,7 +180,9 @@ def create_math_question():
 
             elif operator == "*":
                 answer = first_number * second_number
-
         if answer <= 5 and answer >= 1 and isinstance(answer, int):
-            return {"first_number": first_number, "second_number": second_number, "operator": operator, "correct_answer": answer}
+            return {"first_number": first_number, 
+                    "second_number": second_number,
+                    "operator": operator, 
+                    "correct_answer": answer}
     

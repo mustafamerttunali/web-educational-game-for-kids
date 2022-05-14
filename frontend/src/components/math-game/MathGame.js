@@ -2,31 +2,30 @@ import React, { useEffect, useState, useReducer } from 'react'
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap'
 import HandModuleTest from '../hand-module/HandModuleTest';
 import { GestureContext } from '../hand-module/GestureContext';
+import SecretNav from '../secret-nav/SecretNav';
+import MathQuestion from './MathQuestion';
 import { sendAnswers } from '../../utils/SendAnswers';
-
-import SecretNav from '../secret-nav/SecretNav'
-
-import Question from './Question';
 
 const API = process.env.REACT_APP_API;
 
-export default function CountGame() {
+export default function MathGame() {
     const [user, setUser] = useState("");
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [currentQuestionAnswer, setCurrentQuestionAnswer] = useState(0);
     const [buttonText, setButtonText] = useState("Next Question");
     const [userAnswers, setUserAnswers] = useState("");
     const [infoHand, setInfoHand] = useState("");
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
     const [isAnswered, setIsAnswered] = useState(false);
     const [timer, setTimer] = useState(0);
-    const [gesture] = React.useContext(GestureContext);
-
     const [coldStart, setColdStart] = useState(false);
 
+    // Hash-Maps
     const numberHash = { one: 1, two: 2, three: 3, four: 4, five: 5 };
 
+    // Context
+    const [gesture] = React.useContext(GestureContext);
 
     const splitImagePath = (imagePath) => {
         const split = imagePath.split("/");
@@ -37,7 +36,7 @@ export default function CountGame() {
 
     const getQuestions = async () => {
         try{
-            const response = await fetch(API + '/count-game', {
+            const response = await fetch(API + '/math-game', {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -45,21 +44,12 @@ export default function CountGame() {
             });
             const data = await response.json();
             console.log(data)
-            setCurrentQuestion(data[currentQuestionIndex].number_of_object);
+            setCurrentQuestionAnswer(data[currentQuestionIndex].correct_answer);
             setUser(data["player"]);
             const keys = Object.keys(data).filter(key => typeof data[key] === 'object');
             for(let i = 0; i < keys.length; i++){
                 let key = keys[i];
                 setQuestions(prevState => [...prevState, data[key]])
-
-                // setUserAnswers(prevState => {
-                //     return {...prevState, [key]: {
-                //         "name": data[key].name,
-                //         "correct_answer": data[key].number_of_object,
-                //         "user_answer": null,
-                //         "result": isAnswerCorrect,
-                //     }}
-                // })
             }
         }
         catch(error){
@@ -67,6 +57,8 @@ export default function CountGame() {
         }
         setColdStart(true);
     }
+
+    // get Questions at the beginning
     useEffect(() => {
         getQuestions()
     }, [])
@@ -90,14 +82,16 @@ export default function CountGame() {
         const interval = setInterval(async () => {
             if(count === 0){
                 clearInterval(interval);
-                if(userAnswer === currentQuestion){
+                if(userAnswer === currentQuestionAnswer){
                     setIsAnswerCorrect(true);
                     setInfoHand("Congrats! Your answer is correct! Redirecting to next question...");
                     setUserAnswers(prevState => {
                         return {
-                            ...prevState, [questions[currentQuestionIndex].number]: {
-                                "name": questions[currentQuestionIndex].name,
-                                "correct_answer": questions[currentQuestionIndex].number_of_object,
+                            ...prevState, [currentQuestionIndex]: {
+                                "first_number": questions[currentQuestionIndex].first_number,
+                                "second_number": questions[currentQuestionIndex].second_number,
+                                "operator": questions[currentQuestionIndex].operator,
+                                "correct_answer": questions[currentQuestionIndex].correct_answer,
                                 "user_answer": userAnswer,
                                 "result": true,
                             }
@@ -110,9 +104,11 @@ export default function CountGame() {
                     setInfoHand("Sorry! Your answer is incorrect! Redirecting to next question...");
                     setUserAnswers(prevState => {
                         return {
-                            ...prevState, [questions[currentQuestionIndex].number]: {
-                                "name": questions[currentQuestionIndex].name,
-                                "correct_answer": questions[currentQuestionIndex].number_of_object,
+                            ...prevState, [currentQuestionIndex]: {
+                                "first_number": questions[currentQuestionIndex].first_number,
+                                "second_number": questions[currentQuestionIndex].second_number,
+                                "operator": questions[currentQuestionIndex].operator,
+                                "correct_answer": questions[currentQuestionIndex].correct_answer,
                                 "user_answer": userAnswer,
                                 "result": false,
                             }
@@ -131,13 +127,14 @@ export default function CountGame() {
     }, [gesture])
 
     useEffect(() => {
+        console.log(userAnswers)
         if(currentQuestionIndex === questions.length){
             if(coldStart){
-                sendAnswers(userAnswers, `/count-game`);
+                sendAnswers(userAnswers, `/math-game`);
             }
         }else{
             try {
-                setCurrentQuestion(questions[currentQuestionIndex].number_of_object);
+                setCurrentQuestionAnswer(questions[currentQuestionIndex].correct_answer);
             } catch (error) {
                 
             }
@@ -197,9 +194,9 @@ export default function CountGame() {
 
                 {
                     questions.length > 0 && questions[currentQuestionIndex] !== undefined ? (
-                        <Question   questions={questions} 
+                        <MathQuestion  questions={questions} 
                                     currentQuestionIndex={currentQuestionIndex}
-                                    splitImagePath={splitImagePath}/>
+                                    />
                         ) : (
                         currentQuestionIndex === questions.length ? (
                             <div>
@@ -216,7 +213,6 @@ export default function CountGame() {
                         )
                     )
                 }
-
                 </Col>
                 <Col md={4} className="text-center">
                     <Card>
@@ -234,20 +230,3 @@ export default function CountGame() {
     </div>
   )
 }
-
-// try{
-//     fetch(API + '/count-game', {
-//         method: 'POST',
-//         headers: {
-//             Authorization: 'Bearer ' + localStorage.getItem('token'),
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(userAnswers)
-//     }).then(res => res.json()).then(data => {
-//         console.log(data);
-//     }
-//     )
-// }
-// catch(error){
-//     console.log(error);
-// }          

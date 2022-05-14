@@ -13,6 +13,7 @@ import Dashboard from "./components/dashboard/Dashboard";
 import Logout from "./components/logout/Logout";
 import HandModuleTest from "./components/hand-module/HandModuleTest";
 import CountGame from "./components/count-game/CountGame";
+import MathGame from "./components/math-game/MathGame";
 
 import { GestureContext } from "./components/hand-module/GestureContext";
 
@@ -34,6 +35,11 @@ function App() {
             <Route path="/count-game" element={
               <GestureContext.Provider value={value}>
                   <CountGame />
+              </GestureContext.Provider>
+              } />
+            <Route path="/math-game" element={
+              <GestureContext.Provider value={value}>
+                  <MathGame />
               </GestureContext.Provider>
               } />
         </Routes>

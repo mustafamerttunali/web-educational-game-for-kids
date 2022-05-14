@@ -1,8 +1,8 @@
 const API = process.env.REACT_APP_API;
 
-const sendAnswers = (answerState) => {
+const sendAnswers = (answerState, point) => {
     try{
-        fetch(API + '/count-game', {
+        fetch(API + point, {
             method: 'POST',
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('token'),
