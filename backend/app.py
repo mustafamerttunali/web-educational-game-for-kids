@@ -1,3 +1,4 @@
+from ast import operator
 from flask import Flask, request, redirect, url_for, flash, jsonify
 from flask_pymongo import PyMongo
 from flask_mail import Mail, Message
@@ -82,9 +83,6 @@ def dashboard():
         user_id = get_jwt_identity()
         user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
 
-        print("SELAMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
-        create_report(mongo, user_id)
-
         return jsonify({"status": 200,
                        "child_first_name": user['child_first_name'] + " " + user['child_last_name'],
                     })
@@ -101,6 +99,11 @@ def count_game():
     if request.method == "GET":
         try:
             user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
+
+            if user_answers == None:
+                set_count_game_answers(mongo, ObjectId(user_id))
+                user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
+                
             max_shown_questions = 4
             questions = dict()
 
@@ -206,17 +209,21 @@ def count_game():
 @app.route('/math-game', methods=['GET', 'POST'])
 @jwt_required()
 def math_game():
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    TOTAL_QUESTION_NUMBER = 30
+
     if request.method == "GET":
         try:
-            user_id = get_jwt_identity()
-            user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
-            user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
+            user_answers = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})
+
+            if not user_answer:
+                set_math_game_answers(mongo, user_id)
 
             # Check answered number of questions
-            total_question = 30
             unanswered_questions = 0
-            for i in range(1, total_question + 1):
-                if user_answers["q" + str(i)] == None:
+            for i in range(1, TOTAL_QUESTION_NUMBER + 1):
+                if len(user_answers["q" + str(i)]) == 0:
                     unanswered_questions += 1
 
             if unanswered_questions == 0:
@@ -225,7 +232,6 @@ def math_game():
             # Create math question
             if unanswered_questions > 4:
                 show_question_number = 4
-
             else:
                 show_question_number = unanswered_questions
 
@@ -243,7 +249,39 @@ def math_game():
             return jsonify({"status": 401})
 
     elif request.method == "POST":
-        return
+        try:
+            results = request.json
+            answered_question_number = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})["answered_question_number"]
+            
+            # Set user answers
+            for key, value in results.items():
+                first_number = value["first_number"]
+                second_number = value["second_number"]
+                operator = value["operator"]
+                correct_answer = value["correct_answer"]
+                user_answer = value["user_answer"]
+                result = value["result"]
+
+                for i in range(1, TOTAL_QUESTION_NUMBER + 1):
+                    if len(user_answers["q" + str(i)]) == 0:
+                        answered_question_number += 1
+                        mongo.db.math_game_answers.update_one(
+                            {'user': ObjectId(user_id)},
+                            {'$set': {'q' + str(i): {"first_number": first_number, "second_number": second_number, "operator": operator, "correct_answer": correct_answer, "user_answer": user_answer, "result": result}}}
+                        )
+
+                        mongo.db.math_game_answers.update_one(
+                            {'user': ObjectId(user_id)},
+                            {'$set': {'a' + str(i): bool(result)}}
+                        )
+                        break
+            
+            # Upadate answered number of questions
+            mongo.db.math_game_answers.update_one({'_id': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
+            return jsonify({"status": 200})
+
+        except:
+            return jsonify({"status": 401})
 
     else:  
         return jsonify({"status": 401})
