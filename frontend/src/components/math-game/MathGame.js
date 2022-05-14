@@ -20,18 +20,34 @@ export default function MathGame() {
     const [isAnswered, setIsAnswered] = useState(false);
     const [timer, setTimer] = useState(0);
     const [coldStart, setColdStart] = useState(false);
+    const [isGameOver, setIsGameOver] = useState(false);
+    const [variant, setVariant] = useState("warning");
 
     // Hash-Maps
     const numberHash = { one: 1, two: 2, three: 3, four: 4, five: 5 };
+    const operatorHash = {
+        '+': "plus.png",
+        '-': "negative.png",
+        '*': "cross.png",
+        '/': "division.png",
+      }
+    const numberImageHash = {
+        1: "one.png",
+        2: "two.png",
+        3: "three.png",
+        4: "four.png",
+        5: "five.png",
+    }
 
     // Context
     const [gesture] = React.useContext(GestureContext);
 
-    const splitImagePath = (imagePath) => {
-        const split = imagePath.split("/");
-        const imageName = split[split.length - 1];
-        const finalPath =  `images/${imageName}`;
-        return finalPath;
+    const setOperatorImage = (operator) => {
+        return `assets/${operatorHash[operator]}`
+    }
+
+    const setNumberImage = (number) => {
+        return `assets/${numberImageHash[number]}`
     }
 
     const getQuestions = async () => {
@@ -51,6 +67,8 @@ export default function MathGame() {
                 let key = keys[i];
                 setQuestions(prevState => [...prevState, data[key]])
             }
+            setInfoHand("")
+            setVariant("")
         }
         catch(error){
             console.log(error);
@@ -72,11 +90,13 @@ export default function MathGame() {
         let count = 2;
         if(gesture === null || gesture === undefined){
             setInfoHand("Hand is not detected!");
+            setVariant("warning");
             setIsAnswered(false);
             return;
         }
         else{
-            setInfoHand("Getting your answer... Please hold your hand!");
+            setInfoHand("Getting your answer... Please hold your hand!" + timer);
+            setVariant("info");
         }
 
         const interval = setInterval(async () => {
@@ -97,9 +117,11 @@ export default function MathGame() {
                             }
                         };
                     })
+                    setVariant("success");
                     handleNextQuestion();
                 }
                 else{
+                    setInfoHand("Getting your answer... Please hold your hand!:" + timer);
                     setIsAnswerCorrect(false);
                     setInfoHand("Sorry! Your answer is incorrect! Redirecting to next question...");
                     setUserAnswers(prevState => {
@@ -114,6 +136,7 @@ export default function MathGame() {
                             }
                         };
                     })
+                    setVariant("danger");
                     handleNextQuestion()
                 }
                 setIsAnswered(true);
@@ -129,8 +152,16 @@ export default function MathGame() {
     useEffect(() => {
         console.log(userAnswers)
         if(currentQuestionIndex === questions.length){
+            setTimer("");
             if(coldStart){
-                sendAnswers(userAnswers, `/math-game`);
+                try {
+                    sendAnswers(userAnswers, "/math-game");   
+                } catch (error) {
+                    
+                }
+                setIsGameOver(true);
+                setInfoHand("Game is over! Redirecting to home page...");
+                setVariant("info");
             }
         }else{
             try {
@@ -158,10 +189,76 @@ export default function MathGame() {
                     <hr></hr>
                 </Col>
                 <Col md={12}>
+                    {gesture === null || gesture === undefined ?
+                        <div></div>
+                        :
+                        (
                     <Card className="text-center">
                         <Card.Header>Player: <strong>{user}</strong></Card.Header>
                         <Card.Body>
-                                {
+                                <Alert variant={variant}>
+                                    {infoHand}{(gesture === null || gesture === undefined) && (isAnswered && isAnswerCorrect) && isGameOver? "" : " " + timer}
+                                </Alert>
+                        </Card.Body>
+                    </Card>
+                    )}
+                </Col>
+                <Col md={8}>
+
+                {
+                    questions.length > 0 && questions[currentQuestionIndex] !== undefined ? (
+                        <MathQuestion  questions={questions} 
+                                    operator={setOperatorImage(questions[currentQuestionIndex].operator)}
+                                    firstNumber={setNumberImage(questions[currentQuestionIndex].first_number)}
+                                    secondNumber={setNumberImage(questions[currentQuestionIndex].second_number)}
+                                    />
+                        ) : (
+                        currentQuestionIndex === questions.length ? (
+                            <div>
+                                <br></br>
+                                <Alert variant="light">
+                                    <Alert.Heading className='text-center'>
+                                        There are no question available for that game.
+                                    </Alert.Heading>
+                                </Alert>
+                            </div>
+                    ) : (
+                        <h1>Loading...</h1> 
+                        // TODO: Check if there are questions available
+                        )
+                    )
+                }
+                </Col>
+                <Col md={4} className="text-center">
+                    {isGameOver ? (
+                        <div>
+                            <p>Camera is closed.</p>
+                        </div>
+                        ) : questions.length > 0 ? ( 
+                            <Card>
+                                <Card.Body>
+                                    <HandModuleTest/>
+                                    <br></br>
+                                    <Button variant="outline-primary" size="lg" onClick={() => {
+                                        handleNextQuestion()
+                                    }}> {buttonText}</Button>
+                                </Card.Body>
+                            </Card>
+                        ) : (
+                            <div>
+                                <p>Camera is closed.</p>
+                            </div>
+                        )
+                    }
+                </Col>
+            </Row>
+        </Container>
+    </div>
+  )
+}
+
+
+{/* {
 
                                     isAnswered ?
                                         (
@@ -186,47 +283,4 @@ export default function MathGame() {
                                                 </Alert>
                                             )
                                         )
-                                }
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col md={8}>
-
-                {
-                    questions.length > 0 && questions[currentQuestionIndex] !== undefined ? (
-                        <MathQuestion  questions={questions} 
-                                    currentQuestionIndex={currentQuestionIndex}
-                                    />
-                        ) : (
-                        currentQuestionIndex === questions.length ? (
-                            <div>
-                                <br></br>
-                                <Alert variant="info">
-                                    <Alert.Heading className='text-center'>
-                                        There are no question available for that game.
-                                    </Alert.Heading>
-                                </Alert>
-                            </div>
-                    ) : (
-                        <h1>Loading...</h1> 
-                        // TODO: Check if there are questions available
-                        )
-                    )
-                }
-                </Col>
-                <Col md={4} className="text-center">
-                    <Card>
-                        <Card.Body>
-                            <HandModuleTest/>
-                            <br></br>
-                            <Button variant="outline-primary" size="lg" onClick={() => {
-                                handleNextQuestion()
-                            }}> {buttonText}</Button>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </Container>
-    </div>
-  )
-}
+                                } */}
