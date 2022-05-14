@@ -4,6 +4,7 @@ from fpdf import FPDF
 class Count_Game_PDF(FPDF):
     
     def __init__(self, mongo, user_id):
+        super().__init__(orientation='P', unit='mm', format='Letter')
         self.mongo = mongo
         self.user = self.mongo.db.users.find_one({'_id': ObjectId(user_id)})
         self.user_count_game_answers = self.mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
@@ -39,7 +40,7 @@ class Count_Game_PDF(FPDF):
             self.ln(50)
 
     def draw_frame(self) :
-        self.image(f"frame.jpg", x=0, y=0, w=self.w, h=self.h)
+        self.image(f"report/frame.jpg", x=0, y=0, w=self.w, h=self.h)
 
     def footer(self):
 
@@ -51,8 +52,8 @@ class Count_Game_PDF(FPDF):
 
     def write_initial_page(self):
 
-        userName = self.user["name"]
-        userSurname = self.user["surname"]
+        userName = self.user["child_first_name"]
+        userSurname = self.user["child_last_name"]
 
         game_name_text = "COUNTING GAME"
         game_info_text = "Counting Game is a mini game that aims to teach children that\nbetween the ages of 4 and 6 to count and numbers through the\nobjects we use frequently in our lives."
@@ -124,8 +125,9 @@ class Count_Game_PDF(FPDF):
         datas = []
 
         for i in range(1, self.number_of_questions + 1) :
-            data = self.user_count_game_answers[str(i)]
-            datas.append(data)
+            data = self.user_count_game_answers["stats" + str(i)]
+            if not data == {}:
+                datas.append(data)
 
         for i in range(1,len(datas)+1) :
             
@@ -154,7 +156,7 @@ class Count_Game_PDF(FPDF):
             reset_x()
             self.multi_cell(cell_w, 7, f'{info_texts}', align='C')
 
-            self.image(f"images/{object_name}.jpg", x=image_x, y=image_y, w=32, h=32)
+            self.image(f"report/images/{object_name}.jpg", x=image_x, y=image_y, w=32, h=32)
 
             if (i % 4 == 0) :
                 if (i != len(datas) - 1) :
@@ -168,16 +170,10 @@ class Count_Game_PDF(FPDF):
 
 def count_game_reporting(mongo, user_id) :
 
-    pdf = Count_Game_PDF('P', 'mm', 'Letter', mongo, user_id)
-
+    pdf = Count_Game_PDF(mongo, user_id)
     pdf.set_auto_page_break(auto = True, margin = 15)
-
     pdf.set_margins(15, 15, 15)
-
     pdf.add_page()
-
     pdf.write_initial_page()
-
     pdf.write_data()
-
-    pdf.output("report.pdf")
+    pdf.output("user_reports/count_game_" + str(user_id) + ".pdf")    

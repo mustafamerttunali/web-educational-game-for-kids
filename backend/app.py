@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question
-from report.reporting import create_report
+from report.reporting import count_game_reporting
 import random
 import json
 
@@ -312,19 +312,7 @@ def forgot_password():
 @jwt_required()
 def deneme():
     user_id = get_jwt_identity()
-    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
-    user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
-
-    mongo.db.math_game_answers.update_one(
-                        {'user': ObjectId(user_id)},
-                        {'$set': {'q' + str(2): {
-                            "first_number": 1, 
-                            "second_number": 1, 
-                            "operator": "*", 
-                            "correct_answer": 1, 
-                            "user_answer": 1, 
-                            "result": True}}}
-                    )
+    count_game_reporting(mongo, user_id)
 
     return jsonify({"status": 200})
 
