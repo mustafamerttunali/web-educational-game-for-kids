@@ -217,7 +217,7 @@ def math_game():
         try:
             user_answers = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})
 
-            if not user_answer:
+            if not user_answers:
                 set_math_game_answers(mongo, user_id)
 
             # Check answered number of questions
