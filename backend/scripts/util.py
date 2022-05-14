@@ -96,36 +96,36 @@ def set_count_game_answers(mongo, user_id):
 def set_math_game_answers(mongo, user_id):
     mongo.db.math_game_answers.insert_one({
         'user': user_id,
-        'q1': {},
-        'q2': {},
-        'q3': {},
-        'q4': {},
-        'q5': {},
-        'q6': {},
-        'q7': {},
-        'q8': {},
-        'q9': {},
-        'q10': {},
-        'q11': {},
-        'q12': {},
-        'q13': {},
-        'q14': {},
-        'q15': {},
-        'q16': {},
-        'q17': {},
-        'q18': {},
-        'q19': {},
-        'q20': {},
-        'q21': {},
-        'q22': {},
-        'q23': {},
-        'q24': {},
-        'q25': {},
-        'q26': {},
-        'q27': {},
-        'q28': {},
-        'q29': {},
-        'q30': {},
+        'q1': None,
+        'q2': None,
+        'q3': None,
+        'q4': None,
+        'q5': None,
+        'q6': None,
+        'q7': None,
+        'q8': None,
+        'q9': None,
+        'q10': None,
+        'q11': None,
+        'q12': None,
+        'q13': None,
+        'q14': None,
+        'q15': None,
+        'q16': None,
+        'q17': None,
+        'q18': None,
+        'q19': None,
+        'q20': None,
+        'q21': None,
+        'q22': None,
+        'q23': None,
+        'q24': None,
+        'q25': None,
+        'q26': None,
+        'q27': None,
+        'q28': None,
+        'q29': None,
+        'q30': None,
         'a1': None,
         'a2': None,
         'a3': None,
@@ -164,22 +164,21 @@ def create_math_question():
         operator = random.choice(["+", "-", "*", "/"])
         answer = 0
 
-        if operator == "/":
-            first_number = random.randint(1, 10)
-            second_number = random.randint(1, 5)
+        first_number = random.randint(1, 5)
+        second_number = random.randint(1, 5)
+
+        if operator == "+":
+            answer = first_number + second_number
+        
+        elif operator == "-":
+            answer = first_number - second_number
+
+        elif operator == "*":
+            answer = first_number * second_number
+
+        elif operator == "/":
             answer = first_number / second_number
-        else:
-            first_number = random.randint(1, 5)
-            second_number = random.randint(1, 5)
 
-            if operator == "+":
-                answer = first_number + second_number
-            
-            elif operator == "-":
-                answer = first_number - second_number
-
-            elif operator == "*":
-                answer = first_number * second_number
         if answer <= 5 and answer >= 1 and isinstance(answer, int):
             return {"first_number": first_number, 
                     "second_number": second_number,
