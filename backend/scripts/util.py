@@ -161,23 +161,26 @@ def set_math_game_answers(mongo, user_id):
 
 def create_math_question():
     while True:
-        first_number = random.randint(1, 5)
-        second_number = random.randint(1, 5)
         operator = random.choice(["+", "-", "*", "/"])
         answer = 0
 
-        if operator == "+":
-            answer = first_number + second_number
-        
-        elif operator == "-":
-            answer = first_number - second_number
-
-        elif operator == "*":
-            answer = first_number * second_number
-
-        elif operator == "/":
+        if operator == "/":
+            first_number = random.randint(1, 10)
+            second_number = random.randint(1, 5)
             answer = first_number / second_number
+        else:
+            first_number = random.randint(1, 5)
+            second_number = random.randint(1, 5)
+
+            if operator == "+":
+                answer = first_number + second_number
+            
+            elif operator == "-":
+                answer = first_number - second_number
+
+            elif operator == "*":
+                answer = first_number * second_number
 
         if answer <= 5 and answer >= 1 and isinstance(answer, int):
-            return {"first_number": first_number, "second_number": second_number, "operator": operator, "answer": answer}
+            return {"first_number": first_number, "second_number": second_number, "operator": operator, "correct_answer": answer}
     
