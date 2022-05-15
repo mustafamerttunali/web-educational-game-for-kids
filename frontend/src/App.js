@@ -18,11 +18,11 @@ import CountGame from "./components/count-game/CountGame";
 import MathGame from "./components/math-game/MathGame";
 import ChoosingGame from "./components/choosing-game/ChoosingGame";
 
-import { GestureContext } from "./components/hand-module/GestureContext";
+import { GestureContext, HandCoordinateContext } from "./components/hand-module/GestureContext";
 
 function App() {
   const value = React.useState(null);
-
+  const value2 = React.useState(null); // Coordinates
   return (
     <div>
       <br></br>
@@ -50,9 +50,9 @@ function App() {
               </GestureContext.Provider>
               } />
             <Route path="choosing-game" element={
-              <GestureContext.Provider value={value}>
+              <HandCoordinateContext.Provider value={value2}>
                   <ChoosingGame isChoosingGame={true}/>
-              </GestureContext.Provider>
+              </HandCoordinateContext.Provider>
               } />
         </Routes>
       </Router>

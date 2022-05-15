@@ -318,11 +318,12 @@ def choose_game():
     user_answers = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})
 
     if request.method == "GET":
+        
+        if not user_answers:
+            set_choose_game_answers(mongo, ObjectId(user_id))
+            user_answers = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})
+        
         try:
-            if not user_answers:
-                set_choose_game_answers(mongo, ObjectId(user_id))
-                user_answers = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})
-
             answered_questions = user_answers["answered_question_number"]
             unanswered_questions = TOTAL_QUESTION_NUMBER - answered_questions
 
