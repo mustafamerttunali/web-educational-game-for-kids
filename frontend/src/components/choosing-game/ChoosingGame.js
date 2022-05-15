@@ -5,6 +5,8 @@ import ChoosingGameHandModule from './ChoosingGameHandModule'
 import { HandCoordinateContext } from "../hand-module/GestureContext"; 
 import SecretNav from '../secret-nav/SecretNav';
 import ChoosingGameQuestion from './ChoosingGameQuestion';
+import { sendAnswers } from '../../utils/SendAnswers';
+
 import { split } from '@tensorflow/tfjs';
 
 const API = process.env.REACT_APP_API;
@@ -59,6 +61,7 @@ export default function ChoosingGame() {
     catch(error){
         console.log(error);
     }
+    setColdStart(true);
   }
 
   useEffect(() => {
@@ -67,11 +70,10 @@ export default function ChoosingGame() {
 
   useEffect(() => {
     if(handCoordinates !== null){
-      const currentChoose = handCoordinates["coordinate"]["bottomRight"][0];
+      try {
+        const currentChoose = handCoordinates["coordinate"]["bottomRight"][0];
      
       if(handCoordinates["coordinate"]["select"]){
-        // setInfoHand("Getting your answer... Please hold your hand!")
-        // setVariant("info")
         if(currentChoose < 0){
             setFirstObjectBorder("6px dashed orange");
             setSecondObjectBorder("");
@@ -96,15 +98,17 @@ export default function ChoosingGame() {
           }
           setUserAnswer(null)
         }
+      }
+      catch(error){
+        console.log(error);
+      }
     }
     else{
-        // setInfoHand("Hand is not detected!")
-        // setVariant("warning")
         setIsAnswered(false);
         setFirstObjectBorder("");
         setSecondObjectBorder("");
-    }
-  } , [handCoordinates]);
+      }
+    } , [handCoordinates]);
 
   useEffect(() => {
     setTimer("");
@@ -119,22 +123,51 @@ export default function ChoosingGame() {
         if(count === 0){
           clearInterval(interval);
           if(userAnswer === questions[currentQuestionIndex].correct_object){
-            setInfoHand("Correct!")
+            setInfoHand("Correct! Redirecting to next question...");
             setIsAnswerCorrect(true);
             setVariant("success")
-            console.log("correct")
-            // handleNextQuestion();
+            setTimer("");
+            setUserAnswers(prevState => {
+              return {
+                  ...prevState, [currentQuestionIndex]: {
+                      "first_object": questions[currentQuestionIndex].first_object,
+                      "second_object": questions[currentQuestionIndex].second_object,
+                      "correct_object": questions[currentQuestionIndex].correct_object,
+                      "user_answer": userAnswer,
+                      "result": true,
+                  }
+              };
+            });
+            setTimeout(() => {
+              handleNextQuestion();
+            }, 1500);
           }
           else{
-            setInfoHand("Wrong!")
+            setInfoHand("Wrong! Redirecting to next question...")
             setVariant("danger")
-            console.log("wrong")
             setIsAnswerCorrect(false);
-            // handleNextQuestion();
+            setTimer("");
+            setUserAnswers(prevState => {
+              return {
+                  ...prevState, [currentQuestionIndex]: {
+                      "first_object": questions[currentQuestionIndex].first_object,
+                      "second_object": questions[currentQuestionIndex].second_object,
+                      "correct_object": questions[currentQuestionIndex].correct_object,
+                      "user_answer": userAnswer,
+                      "result": false,
+                  }
+              };
+            });
+             // Go to next question after 1.5 seconds
+             setTimeout(() => {
+              handleNextQuestion();
+            }, 1500);
           }
           setIsAnswered(true);
         }
         else{
+          setInfoHand("Getting your answer... Please hold your hand!")
+          setVariant("info")
           setTimer(count);
           count--;
           console.log(userAnswer)
@@ -142,25 +175,38 @@ export default function ChoosingGame() {
       }, 1000);
       return () => clearInterval(interval);
     }
+    else{
+      setIsAnswered(false);
+      setFirstObjectBorder("");
+      setSecondObjectBorder("");
+      setInfoHand("")
+      setVariant("")
+    }
   }, [userAnswer]);
 
   const handleNextQuestion = () => {
+    setVariant("")
+    setInfoHand("")
     setCurrentQuestionIndex(prevState => prevState + 1)
   }
 
   useEffect(() => {
+    console.log(userAnswers)
+  }, [userAnswers]);
+
+  useEffect(() => {
     if(currentQuestionIndex === questions.length){
-        // setTimer("");
-        // if(coldStart){
-        //     try {
-        //         sendAnswers(userAnswers, "/math-game");   
-        //     } catch (error) {
-                
-        //     }
-        //     setIsGameOver(true);
-        //     setInfoHand("Game is over! Redirecting to home page...");
-        //     setVariant("info");
-        // }
+      if(coldStart){
+        setIsGameOver(true);
+        setInfoHand("Game Over! Redirecting to home...")
+        setVariant("info")
+        try {
+          sendAnswers(userAnswers, "/choose-game"); 
+        } catch (error) {
+          
+        }
+      }
+      
     }else{
         try {
             setCurrentQuestionAnswer(questions[currentQuestionIndex].correct_answer);
@@ -185,31 +231,41 @@ export default function ChoosingGame() {
                     questions.length > 0 && questions[currentQuestionIndex] !== undefined ? (
                         <div>
                          <Alert variant={variant}>
-                                    {infoHand}{timer}
+                                    {infoHand} {timer}
                           </Alert>
                           <ChoosingGameQuestion  questions={questions[currentQuestionIndex]} 
-                            firstObjectImage={splitImagePath(questions[currentQuestionIndex].first_object_path)}
-                            firstObjectBorder={firstObjectBorder}
-                            secondObjectBorder={secondObjectBorder}
-                            secondObjectImage={splitImagePath(questions[currentQuestionIndex].second_object_path)}/>
+                              firstObjectImage={splitImagePath(questions[currentQuestionIndex].first_object_path)}
+                              firstObjectBorder={firstObjectBorder}
+                              secondObjectBorder={secondObjectBorder}
+                              secondObjectImage={splitImagePath(questions[currentQuestionIndex].second_object_path)}/>
                           <ChoosingGameHandModule isChoosingGame={true} />
                         </div>
                         
                         ) : (
-                        currentQuestionIndex === questions.length ? (
+                        isGameOver ? (
                             <div>
                                 <br></br>
-                                <Alert variant="light">
+                                <Alert variant={variant}>
                                     <Alert.Heading className='text-center'>
-                                        There are no question available for that game.
+                                        {infoHand}
                                     </Alert.Heading>
                                 </Alert>
                             </div>
                     ) : (
-                        <h1>Loading...</h1> 
+                        currentQuestionIndex === questions.length ? (
+                          <div>
+                                <br></br>
+                                <Alert variant="light">
+                                    <Alert.Heading className='text-center'>
+                                          There are no question available for that game.
+                                    </Alert.Heading>
+                                </Alert>
+                            </div>
+                        ) : (
+                            <></>
                         // TODO: Check if there are questions available
                         )
-                    )
+                    ))
                 }
                 </Col>
             </Row>

@@ -6,7 +6,7 @@ export default function ChoosingGameQuestion(props) {
     <div>
         <Col md={12}>
             <Card>
-                <h1>Please choose <strong>"{props.questions.correct_object}"</strong> below the image.{props.firstObjectImage} </h1>
+                <h1>Please choose <strong>"{props.questions.correct_object}"</strong> below the image.</h1>
                 <br></br>
                 <Row>
                   <Col md={6}>
