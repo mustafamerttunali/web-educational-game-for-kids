@@ -16,6 +16,7 @@ import random
 import json
 
 TOKEN_EXPIRE_TIME = 2 # HOURS
+TOTAL_QUESTION_NUMBER = 30
 
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
@@ -104,9 +105,21 @@ def dashboard():
         user_id = get_jwt_identity()
         user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
 
+        count_game_question_number = mongo.db.count_game_questions.count_documents({})
+        math_game_question_number = TOTAL_QUESTION_NUMBER
+        choose_game_question_number = TOTAL_QUESTION_NUMBER
+
+        count_game_correct_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})['correct_answer_number']
+        math_game_answered_question_number = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})['answered_question_number']
+        choose_game_answered_question_number = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})['answered_question_number']
+
+
         return jsonify({"status": 200,
                        "child_first_name": user['child_first_name'] + " " + user['child_last_name'],
-                    })
+                       "total_count_game": [count_game_question_number, count_game_correct_answers],
+                       "total_math_game": [math_game_question_number, math_game_answered_question_number],
+                       "total_choose_game": [choose_game_question_number, choose_game_answered_question_number]})
+                       
     except:
         return jsonify({"status": 401})
 
@@ -234,7 +247,6 @@ def count_game():
 def math_game():
     user_id = get_jwt_identity()
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
-    TOTAL_QUESTION_NUMBER = 30
     user_answers = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})
 
     if request.method == "GET":
@@ -320,7 +332,6 @@ def math_game():
 def choose_game():
     user_id = get_jwt_identity()
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
-    TOTAL_QUESTION_NUMBER = 30
     user_answers = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})
 
     if request.method == "GET":
