@@ -201,7 +201,11 @@ export default function ChoosingGame() {
         setInfoHand("Game Over! Redirecting to home...")
         setVariant("info")
         try {
-          sendAnswers(userAnswers, "/choose-game"); 
+          sendAnswers(userAnswers, "/choose-game")
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 1500);
+
         } catch (error) {
           
         }
@@ -263,7 +267,6 @@ export default function ChoosingGame() {
                             </div>
                         ) : (
                             <></>
-                        // TODO: Check if there are questions available
                         )
                     ))
                 }
@@ -273,43 +276,3 @@ export default function ChoosingGame() {
     </div>
   )
 }
-
-{/* <Col md={4} className="text-center">
-                    {isGameOver ? (
-                        <div>
-                            <p>Camera is closed.</p>
-                        </div>
-                        ) : questions.length > 0 ? ( 
-                            <Card>
-                                <Card.Body>
-                                    <ChoosingGameHandModule isChoosingGame={true} />
-                                    <br></br>
-                                    <Button variant="outline-primary" size="lg" onClick={() => {
-                                        // handleNextQuestion()
-                                    }}> {buttonText}</Button>
-                                </Card.Body>
-                            </Card>
-                        ) : (
-                            <div>
-                                <p>Camera is closed.</p>
-                            </div>
-                        )
-                    }
-                </Col> */}
-
-
-{/* <Col md={12}>
-                    {handCoordinates === null || handCoordinates === undefined ?
-                        <div></div>
-                        :
-                        (
-                    <Card className="text-center">
-                        <Card.Header>Player: <strong>{user}</strong></Card.Header>
-                        <Card.Body>
-                                <Alert variant={variant}>
-                                    {infoHand}{(handCoordinates === null || handCoordinates === undefined) && (isAnswered && isAnswerCorrect) && isGameOver? "" : " " + timer}
-                                </Alert>
-                        </Card.Body>
-                    </Card>
-                    )}
-                </Col> */}
