@@ -186,6 +186,90 @@ def create_math_question():
                     "operator": operator, 
                     "correct_answer": answer}
 
+def set_choose_game_answers(mongo, user_id):
+    mongo.db.choose_game_answers.insert_one({
+        'user': user_id,
+        'q1': None,
+        'q2': None,
+        'q3': None,
+        'q4': None,
+        'q5': None,
+        'q6': None,
+        'q7': None,
+        'q8': None,
+        'q9': None,
+        'q10': None,
+        'q11': None,
+        'q12': None,
+        'q13': None,
+        'q14': None,
+        'q15': None,
+        'q16': None,
+        'q17': None,
+        'q18': None,
+        'q19': None,
+        'q20': None,
+        'q21': None,
+        'q22': None,
+        'q23': None,
+        'q24': None,
+        'q25': None,
+        'q26': None,
+        'q27': None,
+        'q28': None,
+        'q29': None,
+        'q30': None,
+        'a1': None,
+        'a2': None,
+        'a3': None,
+        'a4': None,
+        'a5': None,
+        'a6': None,
+        'a7': None,
+        'a8': None,
+        'a9': None,
+        'a10': None,
+        'a11': None,
+        'a12': None,
+        'a13': None,
+        'a14': None,
+        'a15': None,
+        'a16': None,
+        'a17': None,
+        'a18': None,
+        'a19': None,
+        'a20': None,
+        'a21': None,
+        'a22': None,
+        'a23': None,
+        'a24': None,
+        'a25': None,
+        'a26': None,
+        'a27': None,
+        'a28': None,
+        'a29': None,
+        'a30': None,
+        'answered_question_number': 0
+    })
+
+def create_choose_question(mongo):
+    number_of_objects = mongo.db.count_game_questions.count_documents({})
+    while True:
+        first_random_number = random.randint(1, number_of_objects)
+        second_random_number = random.randint(1, number_of_objects)
+
+        if first_random_number != second_random_number:
+            first_object = mongo.db.count_game_questions.find_one({'number': first_random_number})
+            second_object = mongo.db.count_game_questions.find_one({'number': second_random_number})
+
+            correct_object = random.choice([first_object["name"], second_object["name"]])
+
+            return {"first_object": first_object["name"],
+                    "second_object": second_object["name"],
+                    "first_object_path": first_object["image_path"],
+                    "second_object_path": second_object["image_path"],
+                    "correct_object": correct_object}
+
 def send_count_game_report(app, mail, user):
     user_id = user['_id']
     parent_first_name = user['parent_first_name']
