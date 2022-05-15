@@ -1,4 +1,3 @@
-from ast import operator
 from flask import Flask, request, redirect, url_for, flash, jsonify
 from flask_pymongo import PyMongo
 from flask_mail import Mail, Message
@@ -8,7 +7,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from bson.json_util import dumps
-from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question, send_count_game_report, send_math_game_report
+from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question, send_count_game_report, send_math_game_report, set_choose_game_answers, create_choose_question
 from report.reporting import count_game_reporting, math_game_reporting
 import random
 import json
@@ -68,6 +67,7 @@ def register():
 
     set_count_game_answers(mongo, user_id)
     set_math_game_answers(mongo, user_id)
+    set_choose_game_answers(mongo, ObjectId(user_id))
 
     result = jsonify({"result":"1"})
     return result
@@ -246,9 +246,8 @@ def math_game():
                 return jsonify({"status": 200, "result": "1"})
 
             # Create math question
-            if unanswered_questions > 4:
-                show_question_number = 4
-            else:
+            show_question_number = 4
+            if unanswered_questions < show_question_number:
                 show_question_number = unanswered_questions
 
             questions = dict()
@@ -266,8 +265,8 @@ def math_game():
     elif request.method == "POST":
         try:
             if not user_answers:
-                    set_math_game_answers(mongo, ObjectId(user_id))
-                    user_answers = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})
+                set_math_game_answers(mongo, ObjectId(user_id))
+                user_answers = mongo.db.math_game_answers.find_one({'user': ObjectId(user_id)})
             
             results = request.json
             answered_question_number = user_answers["answered_question_number"]
@@ -280,7 +279,6 @@ def math_game():
                 correct_answer = value["correct_answer"]
                 user_answer = value["user_answer"]
                 result = value["result"]
-                print(result)
 
                 answered_question_number += 1
                 mongo.db.math_game_answers.update_one(
@@ -291,12 +289,12 @@ def math_game():
                         "operator": operator, 
                         "correct_answer": correct_answer, 
                         "user_answer": user_answer, 
-                        "result": bool(result)}}}
+                        "result": None if result == None else bool(result)}}}
                 )
 
                 mongo.db.math_game_answers.update_one(
                     {'user': ObjectId(user_id)},
-                    {'$set': {'a' + str(answered_question_number): bool(result)}}
+                    {'$set': {'a' + str(answered_question_number): None if result == None else bool(result)}}
                 )
 
             # Create report and send mail if game is finished
@@ -312,6 +310,87 @@ def math_game():
 
     else:  
         return jsonify({"status": 401})
+
+@app.route('/choose-game', methods=['GET', 'POST'])
+@jwt_required()
+def choose_game():
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    TOTAL_QUESTION_NUMBER = 30
+    user_answers = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})
+
+    if request.method == "GET":
+        try:
+            if not user_answers:
+                set_choose_game_answers(mongo, ObjectId(user_id))
+                user_answers = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})
+
+            answered_questions = user_answers["answered_question_number"]
+            unanswered_questions = TOTAL_QUESTION_NUMBER - answered_questions
+            print(unanswered_questions)
+
+            if unanswered_questions == 0:
+                return jsonify({"status": 200, "result": "1"})
+
+            # Create choose game questions
+            show_question_number = 4
+            if unanswered_questions < show_question_number:
+                show_question_number = unanswered_questions
+
+            questions = dict()
+
+            for i in range(show_question_number):
+                question = create_choose_question(mongo)
+                questions[str(i)] = question
+
+            questions["status"] = 200
+            questions["player"] = user['child_first_name'] + " " + user['child_last_name']
+            return json.loads(dumps(questions))
+        except:
+            return jsonify({"status": 401})
+
+    elif request.method == "POST":
+        
+        if not user_answers:
+            set_choose_game_answers(mongo, ObjectId(user_id))
+            user_answers = mongo.db.choose_game_answers.find_one({'user': ObjectId(user_id)})
+
+        results = request.json
+        answered_question_number = user_answers["answered_question_number"]
+        print("answered_question_number: " + str(answered_question_number))
+        print(results)
+
+        for key, value in results.items():
+            first_object = value["first_object"]
+            second_object = value["second_object"]
+            correct_answer = value["correct_object"]
+            user_answer = value["user_answer"]
+            result = value["result"]
+            print(result)
+            answered_question_number += 1
+
+            mongo.db.choose_game_answers.update_one(
+                {'user': ObjectId(user_id)},
+                {'$set': {'q' + str(answered_question_number): {
+                    "first_object": first_object, 
+                    "second_object": second_object, 
+                    "correct_object": correct_answer, 
+                    "user_answer": user_answer, 
+                    "result": None if result == None else bool(result)}}}
+            )
+
+            mongo.db.choose_game_answers.update_one(
+                {'user': ObjectId(user_id)},
+                {'$set': {'a' + str(answered_question_number): None if result == None else bool(result)}}
+            )
+
+        # Update answered number of questions
+        mongo.db.choose_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
+        return jsonify({"status": 200})
+
+    else:
+        return jsonify({"status": 401})
+        
 
 """@app.route('/forgot_password', methods=['POST'])
 def forgot_password():
