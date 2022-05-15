@@ -137,17 +137,20 @@ class Count_Game_PDF(FPDF):
 
             info_texts = ""
 
-            for j in range(1,len(data)+1) :
-
-                error = data[str(j)]
-
+            for j in range(1,6) :
+                
+                try :
+                    error = data[str(j)]
+                except :
+                    break
+                
                 error_no        = j
                 object_name     = error["name"]
                 correct_answer  = error["correct_answer"]
                 user_answer     = error["user_answer"]
 
                 text = f"                {error_no}.     Correct Answer:   {correct_answer}          User Answer:   {user_answer}"
-            
+                
                 info_texts += (text+"\n")
             
             info_texts = info_texts[:-1]
