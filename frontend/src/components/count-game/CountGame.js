@@ -52,15 +52,14 @@ export default function CountGame() {
             for(let i = 0; i < keys.length; i++){
                 let key = keys[i];
                 setQuestions(prevState => [...prevState, data[key]])
-
-                // setUserAnswers(prevState => {
-                //     return {...prevState, [key]: {
-                //         "name": data[key].name,
-                //         "correct_answer": data[key].number_of_object,
-                //         "user_answer": null,
-                //         "result": isAnswerCorrect,
-                //     }}
-                // })
+                setUserAnswers(prevState => {
+                    return {...prevState, [data[key].number]: {
+                        "name": data[key].name,
+                        "correct_answer": data[key].number_of_object,
+                        "user_answer": null,
+                        "result": null,
+                    }}
+                })
             }
         }
         catch(error){

@@ -66,6 +66,18 @@ export default function MathGame() {
             for(let i = 0; i < keys.length; i++){
                 let key = keys[i];
                 setQuestions(prevState => [...prevState, data[key]])
+                setUserAnswers(prevState => {
+                    return {
+                        ...prevState, [key]: {
+                            "first_number": data[key].first_number,
+                            "second_number": data[key].second_number,
+                            "operator": data[key].operator,
+                            "correct_answer": data[key].correct_answer,
+                            "user_answer": null,
+                            "result": null,
+                        }
+                    };
+                })
             }
             setInfoHand("")
             setVariant("")

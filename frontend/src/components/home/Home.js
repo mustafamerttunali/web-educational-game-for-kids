@@ -34,7 +34,7 @@ export default function Home() {
         }
       })
     } else{
-      window.location.href = '/login';
+     
     }
   })
   
@@ -54,7 +54,7 @@ export default function Home() {
                 <Card.Body>
                   <Card.Title>A COMP 204 project.</Card.Title>
                   <Card.Text>
-                    With supporting text below as a natural lead-in to additional content.
+                    Please register/login to see the dashboard.
                   </Card.Text>
               </Card.Body>
             </Card>
@@ -66,8 +66,9 @@ export default function Home() {
               <Card.Body>
                 <Card.Title className="text-center">Counting Game</Card.Title>
                 <Card.Text>
-                  This is a longer card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit longer.
+                Counting Game teaches children to count by using objects that we often use in our lives.
+                <br></br>
+                <br></br>
                 </Card.Text>
               </Card.Body>
             </Card>
@@ -79,8 +80,7 @@ export default function Home() {
               <Card.Body>
                 <Card.Title className="text-center">Math Game</Card.Title>
                 <Card.Text>
-                  This is a longer card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit longer.
+                  Math Game aims to teach children addition, subtraction, multiplication and division with simple numbers.
                 </Card.Text>
               </Card.Body>
             </Card>
@@ -92,8 +92,9 @@ export default function Home() {
               <Card.Body>
                 <Card.Title className="text-center">Choosing Game</Card.Title>
                 <Card.Text>
-                  This is a longer card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit longer.
+                  Choose game aims to teach young children about objects that are frequently used in our lives.
+                  <br></br>
+                  <br></br>
                 </Card.Text>
               </Card.Body>
             </Card>

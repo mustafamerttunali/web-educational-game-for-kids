@@ -54,6 +54,17 @@ export default function ChoosingGame() {
         for(let i = 0; i < keys.length; i++){
             let key = keys[i];
             setQuestions(prevState => [...prevState, data[key]])
+            setUserAnswers(prevState => {
+              return {
+                  ...prevState, [key]: {
+                      "first_object": data[key].first_object,
+                      "second_object": data[key].second_object,
+                      "correct_object": data[key].correct_object,
+                      "user_answer": null,
+                      "result": null,
+                  }
+              };
+            });
         }
         setInfoHand("")
         setVariant("")

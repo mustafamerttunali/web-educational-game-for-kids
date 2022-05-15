@@ -138,7 +138,7 @@ def count_game():
                 set_count_game_answers(mongo, ObjectId(user_id))
                 user_answers = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})
                 
-            max_shown_questions = 4
+            max_shown_questions = 6
             questions = dict()
 
             unanswered_questions = 0
@@ -172,10 +172,11 @@ def count_game():
             return jsonify({"status": 401})
 
     elif request.method == "POST":
-        try:
-            results = request.json
-            correct_answer_number = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})["correct_answer_number"]
+        results = request.json
+        print(results)
+        correct_answer_number = mongo.db.count_game_answers.find_one({'user': ObjectId(user_id)})["correct_answer_number"]
 
+        try:
             # Set user answers
             for key, value in results.items():
                 name = value["name"]
@@ -228,12 +229,13 @@ def count_game():
                         {'$set': {'stats' + str(key): question_statistics}}
                     )
 
+            # Update correct number of answers
+            mongo.db.count_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'correct_answer_number': correct_answer_number}})
+
             # Create report and send mail if game is finished
             if correct_answer_number == number_of_questions:
                 create_report_and_send_mail(user_id, "count_game")
 
-            # Upadate correct number of answers
-            mongo.db.count_game_answers.update_one({'_id': ObjectId(user_id)}, {'$set': {'correct_answer_number': correct_answer_number}})
             return jsonify({"status": 200})
 
         except:
@@ -262,7 +264,7 @@ def math_game():
                 return jsonify({"status": 200, "result": "1"})
 
             # Create math question
-            show_question_number = 4
+            show_question_number = 6
             if unanswered_questions < show_question_number:
                 show_question_number = unanswered_questions
 
@@ -313,12 +315,13 @@ def math_game():
                     {'$set': {'a' + str(answered_question_number): None if result == None else bool(result)}}
                 )
 
+            # Update answered number of questions
+            mongo.db.math_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
+
             # Create report and send mail if game is finished
             if answered_question_number == TOTAL_QUESTION_NUMBER:
                 create_report_and_send_mail(user_id, "math_game")
 
-            # Upadate answered number of questions
-            mongo.db.math_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
             return jsonify({"status": 200})
 
         except:
@@ -348,7 +351,7 @@ def choose_game():
                 return jsonify({"status": 200, "result": "1"})
 
             # Create choose game questions
-            show_question_number = 4
+            show_question_number = 6
             if unanswered_questions < show_question_number:
                 show_question_number = unanswered_questions
 
@@ -396,12 +399,13 @@ def choose_game():
                 {'user': ObjectId(user_id)},
                 {'$set': {'a' + str(answered_question_number): None if result == None else bool(result)}}
             )
-        
-        if answered_question_number == TOTAL_QUESTION_NUMBER:
-            create_report_and_send_mail(user_id, "choose_game")
 
         # Update answered number of questions
         mongo.db.choose_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
+        
+        if answered_question_number == TOTAL_QUESTION_NUMBER:
+            create_report_and_send_mail(user_id, "choose_game")
+        
         return jsonify({"status": 200})
 
     else:
