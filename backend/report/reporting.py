@@ -50,6 +50,8 @@ class Count_Game_PDF(FPDF):
 
         self.set_font('helvetica', 'I', 8)
 
+        self.set_text_color(0, 0, 0)
+
         self.cell(0, 10, f'Page {self.page_no()}', align='C')
 
     def write_initial_page(self):
@@ -216,6 +218,8 @@ class Math_Game_PDF(FPDF):
         self.set_y(-10)
 
         self.set_font('helvetica', 'I', 8)
+
+        self.set_text_color(0, 0, 0)
 
         self.cell(0, 10, f'Page {self.page_no()}', align='C')
 
@@ -443,6 +447,8 @@ class Choose_Game_PDF(FPDF):
 
         self.set_font('helvetica', 'I', 8)
 
+        self.set_text_color(0,0,0)
+
         self.cell(0, 10, f'Page {self.page_no()}', align='C')
 
     def write_initial_page(self):
@@ -504,7 +510,7 @@ class Choose_Game_PDF(FPDF):
 
         cell_w = self.get_string_width(chapter_name) + 100
         reset_x = lambda : self.set_x((self.w - cell_w) / 2)
-        image_y = 60
+        image_y =85
         image_x = 25
 
         self.set_text_color(0, 0, 0)
@@ -513,7 +519,7 @@ class Choose_Game_PDF(FPDF):
 
         reset_x()
         self.cell(cell_w, 15, f'{chapter_name}', align='C', ln=1)
-        self.ln(10)
+        self.ln(5)
 
         self.set_font('Arial', 'B', 12)
         
@@ -539,10 +545,10 @@ class Choose_Game_PDF(FPDF):
 
         import pprint
         pprint.pprint(datas)
-        """
+        
         is_result_head = False
         i = 1
-        boundary = 4
+        boundary = 2
         while i <= len(datas):
 
             if (i == 1 and is_result_head == False):
@@ -554,11 +560,11 @@ class Choose_Game_PDF(FPDF):
 
                 cell_pad = 5
                 pad_x = self.get_string_width(text2)
-                pad_y = 10
+                pad_y = 7
                 border = 0
 
                 self.set_text_color(0,0,0)
-                self.set_font('Arial', 'I', 15)
+                self.set_font('Arial', 'I', 12)
                 self.cell(cell_pad)
                 self.cell(pad_x, pad_y, f'{text1}', align='L', ln=1, border=border)
 
@@ -571,24 +577,24 @@ class Choose_Game_PDF(FPDF):
                 self.cell(cell_pad)
                 self.cell(pad_x, pad_y, f'{text4}', align='L', ln=1, border=border)
 
-                self.ln(15)
+                self.ln(5)
 
                 is_result_head = False
             
             data = datas[i-1]
+            print(data)
+            
+            first_object = data["first_object"]
+            second_object = data["second_object"]
+            correct_object = data["correct_object"]
+            user_answer = None if data["user_answer"] == None or data["user_answer"] == "" or data["user_answer"] == " " else data["user_answer"]
+            result = None if data["result"] == None else data["result"]
 
-            correct_answer = data["correct_answer"]
-            first_number = data["first_number"]
-            second_number = data["second_number"]
-            operator = "x" if data["operator"] == "*" else data["operator"]
-            result = data["result"]
-            user_answer = data["user_answer"]
-
+            
             text1 = f"Question {i}"
-            text2 = f"This question answered " + ("correctly" if bool(result) else "incorrectly" + "!")
-            text3 = f"{first_number} {operator} {second_number} = {correct_answer}"
-            text4 = "" if bool(result) else f"User answer: {user_answer}"
-
+            text2 = f"Correct Answer: {correct_object}"
+            text3 = f"User Answer: " + (user_answer if user_answer != None else "Not answered")
+            print(f"|{user_answer}|")
             resultTextColor = (0,255,0) if bool(result) else (255,0,0)
             cell_pad = 10
             pad_x = self.get_string_width(text2)
@@ -599,32 +605,35 @@ class Choose_Game_PDF(FPDF):
             self.set_font('Arial', 'B', 16)
             self.cell(cell_pad)
             self.cell(pad_x, pad_y, f'{text1}', align='L', ln=1, border=border)
+            self.ln(45)
 
-            self.set_text_color(*resultTextColor)
-            self.set_font('Arial', 'I', 12)
-            self.cell(cell_pad)
+            self.image("report/images/"+first_object+".jpg", 1.75*image_x, image_y, w=40, h=40)
+            self.image("report/images/"+second_object+".jpg", 5.25*image_x, image_y, w=40, h=40)
+
+            self.set_font('Arial', 'B', 14)
+            self.set_text_color(0,0,255)
+            self.cell(cell_pad*1.5)
             self.cell(pad_x, pad_y, f'{text2}', align='L', ln=1, border=border)
 
-            self.set_text_color(0,0,255)
-            self.set_font('Times', 'B', 16)
-            self.cell(cell_pad)
+            self.ln(5)
+
+            self.set_font('Arial', 'B', 14)
+            self.set_text_color(*(128,128,128) if result == None else ((255,0,0) if result == False else (0,255,0)))
+            self.cell(cell_pad*1.5)
             self.cell(pad_x, pad_y, f'{text3}', align='L', ln=1, border=border)
 
-            self.set_text_color(0,0,0)
-            self.set_font('Arial', 'BU', 14)
-            self.cell(cell_pad)
-            self.cell(pad_x, pad_y, f'{text4}', align='L', ln=1, border=border)
-
+            image_y+=85
             self.ln(15)
 
             if (i == boundary) :
                 if (i != len(datas)) :
                     self.add_page()
-                    self.ln(30)
-                boundary+=5
+                    self.ln(2.5)
+                    image_y = 25
+                boundary+=3
 
-            i+=1"""
-
+            i+=1
+            
 
 def count_game_reporting(mongo, user_id) :
     try :
@@ -653,12 +662,15 @@ def math_game_reporting(mongo, user_id) :
         print("Error in math_game_reporting")
 
 def choose_game_reporting(mongo, user_id) :
-    
-    pdf = Choose_Game_PDF(mongo, user_id)
-    pdf.set_auto_page_break(auto = True, margin = 15)
-    pdf.set_margins(15, 15, 15)
-    pdf.add_page()
-    pdf.write_initial_page()
-    pdf.write_data()
-    pdf.output("user_reports/choose_game_" + str(user_id) + ".pdf")
+    try :
+        pdf = Choose_Game_PDF(mongo, user_id)
+        pdf.set_auto_page_break(auto = True, margin = 15)
+        pdf.set_margins(15, 15, 15)
+        pdf.add_page()
+        pdf.write_initial_page()
+        pdf.write_data()
+        pdf.output("user_reports/choose_game_" + str(user_id) + ".pdf")
+    except Exception as e :
+        print(e)
+        print("Error in choose_game_reporting")
     

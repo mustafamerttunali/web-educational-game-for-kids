@@ -408,6 +408,8 @@ def deneme():
     user_id = get_jwt_identity()
     
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    count_game_reporting(mongo, user_id)
+    math_game_reporting(mongo, user_id)
     choose_game_reporting(mongo, user_id)
 
     return jsonify({"status": 200})
