@@ -289,8 +289,8 @@ def send_count_game_report(app, mail, user):
     You can see the results in the attached file.\n\n"""
     msg.body = body
 
-    with app.open_resource("user_reports/count_game_" + str(user_id) + ".pdf") as fp:
-        msg.attach("count_game_" + str(user_id) + ".pdf", "application/pdf", fp.read())
+    with app.open_resource("user_reports/count_game/" + str(user_id) + ".pdf") as fp:
+        msg.attach(str(user_id) + ".pdf", "application/pdf", fp.read())
     
     mail.send(msg)
 
@@ -313,7 +313,32 @@ def send_math_game_report(app, mail, user):
     You can see the results in the attached file.\n\n"""
     msg.body = body
 
-    with app.open_resource("user_reports/math_game_" + str(user_id) + ".pdf") as fp:
-        msg.attach("math_game_" + str(user_id) + ".pdf", "application/pdf", fp.read())
+    with app.open_resource("user_reports/math_game/" + str(user_id) + ".pdf") as fp:
+        msg.attach(str(user_id) + ".pdf", "application/pdf", fp.read())
     
     mail.send(msg)
+
+def send_choose_game_report(app, mail, user):
+    user_id = user['_id']
+    parent_first_name = user['parent_first_name']
+    parent_last_name = user['parent_last_name']
+    child_first_name = user['child_first_name']
+    child_last_name = user['child_last_name']
+    email = user['email']
+
+    msg = Message(
+        subject="Choose Game Report for " + child_first_name + " " + child_last_name,
+        sender='ahmet.mail.ops@gmail.com',
+        recipients=[email]
+    )
+
+    body = f"""Dear {parent_first_name} {parent_last_name},\n\n
+    Your child {child_first_name} {child_last_name} has finished the choose game.\n
+    You can see the results in the attached file.\n\n"""
+    msg.body = body
+
+    with app.open_resource("user_reports/choose_game/" + str(user_id) + ".pdf") as fp:
+        msg.attach(str(user_id) + ".pdf", "application/pdf", fp.read())
+    
+    mail.send(msg)
+    

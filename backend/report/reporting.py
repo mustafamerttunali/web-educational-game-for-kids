@@ -1,5 +1,6 @@
 from bson.objectid import ObjectId
 from fpdf import FPDF
+import os
 
 class Count_Game_PDF(FPDF):
     
@@ -635,7 +636,6 @@ class Choose_Game_PDF(FPDF):
 
             i+=1
             
-
 def count_game_reporting(mongo, user_id) :
     try :
         pdf = Count_Game_PDF(mongo, user_id)
@@ -644,7 +644,9 @@ def count_game_reporting(mongo, user_id) :
         pdf.add_page()
         pdf.write_initial_page()
         pdf.write_data()
-        pdf.output("user_reports/count_game_" + str(user_id) + ".pdf")    
+        if not os.path.isdir("user_reports/count_game"):
+            os.makedirs("user_reports/count_game")
+        pdf.output("user_reports/count_game/" + str(user_id) + ".pdf")    
     except Exception as e :
         print(e)
         print("Error in count game reporting")
@@ -657,7 +659,9 @@ def math_game_reporting(mongo, user_id) :
         pdf.add_page()
         pdf.write_initial_page()
         pdf.write_data()
-        pdf.output("user_reports/math_game_" + str(user_id) + ".pdf")    
+        if not os.path.isdir("user_reports/math_game"):
+            os.makedirs("user_reports/math_game")
+        pdf.output("user_reports/math_game/" + str(user_id) + ".pdf")    
     except Exception as e :
         print(e)
         print("Error in math_game_reporting")
@@ -670,7 +674,9 @@ def choose_game_reporting(mongo, user_id) :
         pdf.add_page()
         pdf.write_initial_page()
         pdf.write_data()
-        pdf.output("user_reports/choose_game_" + str(user_id) + ".pdf")
+        if not os.path.isdir("user_reports/choose_game"):
+            os.makedirs("user_reports/choose_game")
+        pdf.output("user_reports/choose_game/" + str(user_id) + ".pdf")
     except Exception as e :
         print(e)
         print("Error in choose_game_reporting")
