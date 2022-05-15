@@ -22,8 +22,13 @@ export default function ChoosingGameHandModule(props) {
         const [emoji, setEmoji] = React.useContext(HandCoordinateContext);
         const images = { one: one, two: two, three:three, four: four, five: five, undefined: null };
         let keyPoints = [];
-    
 
+        const style = {
+            "correct": "1px solid limegreen",
+            "incorrect": "1px solid red",
+            "selected": "1px solid blue",
+        }
+    
         const runHandpose = async () => {
             const net = await handpose.load();
             console.log("Handpose model loaded.");
@@ -57,10 +62,7 @@ export default function ChoosingGameHandModule(props) {
                 
               if (hand.length > 0) {
                 const GE = new fp.GestureEstimator([
-                  OneGesture,
                   TwoGesture,
-                  ThreeGesture,
-                  FourGesture,
                   FiveGesture
                 ]);
 
@@ -103,6 +105,9 @@ export default function ChoosingGameHandModule(props) {
                                 },
                             });
                         }
+                        else{
+                            setEmoji(null)
+                        }
                     } else{
                         setEmoji(undefined)
                     }
@@ -134,18 +139,6 @@ export default function ChoosingGameHandModule(props) {
                 <Container>
                     <Row>
                         <Col>
-                            <Row className='d-flex justify-content-center'>
-                                <Webcam
-                                    ref={webcamRef}
-                                    style={{
-                                        textAlign: "center",
-                                        zindex: 9,
-                                        width: 320,
-                                        height: 240,
-                                    }}
-                                />
-                            </Row>
-
                             <canvas
                                 ref={canvasRef}
                                 style={{
@@ -153,25 +146,23 @@ export default function ChoosingGameHandModule(props) {
                                     right: 0,
                                     textAlign: "center",
                                     zindex: 9,
-                                    width: 320,
-                                    height: 240,
+                                    width: "100%",
+                                    height: 120,
                                 }}
                             />
-                            {emoji !== null ? (
-                                <Row className='d-flex justify-content-center'>
-                                    <Card.Img
-                                        src={images[emoji]}
-                                        style={{
+                             <Row className='d-flex justify-content-center'>
+                                <Webcam
+                                    ref={webcamRef}
+                                    style={{
                                         textAlign: "center",
-                                        height: 100,
-                                        width: "50%",
-                                        }}
-                                    />
-                                </Row>
-                            ) : (
-                            ""
-                            )}
+                                        zindex: 9999999,
+                                        width: 240,
+                                        height: 240,
+                                    }}
+                                />
+                            </Row>
                         </Col>
+
                     </Row>
                 </Container>
             </div>
