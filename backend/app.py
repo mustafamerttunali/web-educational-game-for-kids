@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, flash, jsonify
+from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
 from flask_mail import Mail, Message
 from flask_bcrypt import Bcrypt
@@ -7,7 +7,10 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from bson.json_util import dumps
-from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question, send_count_game_report, send_math_game_report, set_choose_game_answers, create_choose_question
+from scripts.util import (count_game_questions, set_user, set_count_game_answers, 
+                          set_math_game_answers, create_math_question, send_count_game_report, 
+                          send_math_game_report, set_choose_game_answers, create_choose_question,
+                          send_choose_game_report)
 from report.reporting import count_game_reporting, math_game_reporting, choose_game_reporting
 import random
 import json
@@ -38,6 +41,9 @@ def create_report_and_send_mail(user_id, report_type):
         elif report_type == "math_game":
             math_game_reporting(mongo, user_id)
             send_math_game_report(app, mail, user)
+        elif report_type == "choose_game":
+            choose_game_reporting(mongo, user_id)
+            send_choose_game_report(app, mail, user)
         else:
             print("Invalid report type")
 
@@ -379,6 +385,9 @@ def choose_game():
                 {'user': ObjectId(user_id)},
                 {'$set': {'a' + str(answered_question_number): None if result == None else bool(result)}}
             )
+        
+        if answered_question_number == TOTAL_QUESTION_NUMBER:
+            create_report_and_send_mail(user_id, "choose_game")
 
         # Update answered number of questions
         mongo.db.choose_game_answers.update_one({'user': ObjectId(user_id)}, {'$set': {'answered_question_number': answered_question_number}})
@@ -409,9 +418,11 @@ def deneme():
     user_id = get_jwt_identity()
     
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
-    count_game_reporting(mongo, user_id)
-    math_game_reporting(mongo, user_id)
-    choose_game_reporting(mongo, user_id)
+    
+    send_count_game_report(app, mail, user)
+    send_math_game_report(app, mail, user)
+    send_choose_game_report(app, mail, user)
+    
 
     return jsonify({"status": 200})
 
