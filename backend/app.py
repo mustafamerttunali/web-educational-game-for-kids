@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from scripts.util import count_game_questions, set_user, set_count_game_answers, set_math_game_answers, create_math_question, send_count_game_report, send_math_game_report, set_choose_game_answers, create_choose_question
-from report.reporting import count_game_reporting, math_game_reporting
+from report.reporting import count_game_reporting, math_game_reporting, choose_game_reporting
 import random
 import json
 
@@ -203,7 +203,6 @@ def count_game():
                     number_of_error += 1
 
                     question_statistics[str(number_of_error)] = {"name": name, "question_number": key, "correct_answer": correct_answer, "user_answer": None}
-                    print(question_statistics)
 
                     mongo.db.count_game_answers.update_one(
                         {'user': ObjectId(user_id)},
@@ -240,7 +239,6 @@ def math_game():
 
             answered_questions = user_answers["answered_question_number"]
             unanswered_questions = TOTAL_QUESTION_NUMBER - answered_questions
-            print(unanswered_questions)
 
             if unanswered_questions == 0:
                 return jsonify({"status": 200, "result": "1"})
@@ -327,7 +325,6 @@ def choose_game():
 
             answered_questions = user_answers["answered_question_number"]
             unanswered_questions = TOTAL_QUESTION_NUMBER - answered_questions
-            print(unanswered_questions)
 
             if unanswered_questions == 0:
                 return jsonify({"status": 200, "result": "1"})
@@ -357,8 +354,6 @@ def choose_game():
 
         results = request.json
         answered_question_number = user_answers["answered_question_number"]
-        print("answered_question_number: " + str(answered_question_number))
-        print(results)
 
         for key, value in results.items():
             first_object = value["first_object"]
@@ -366,7 +361,7 @@ def choose_game():
             correct_answer = value["correct_object"]
             user_answer = value["user_answer"]
             result = value["result"]
-            print(result)
+
             answered_question_number += 1
 
             mongo.db.choose_game_answers.update_one(
@@ -412,7 +407,10 @@ def forgot_password():
 def deneme():
     user_id = get_jwt_identity()
     
-    create_report_and_send_mail(user_id, "math_game")
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    count_game_reporting(mongo, user_id)
+    math_game_reporting(mongo, user_id)
+    choose_game_reporting(mongo, user_id)
 
     return jsonify({"status": 200})
 
