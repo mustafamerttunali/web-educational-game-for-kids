@@ -1,7 +1,5 @@
 from bson.objectid import ObjectId
 from fpdf import FPDF
-from matplotlib.pyplot import text
-from more_itertools import first
 
 class Count_Game_PDF(FPDF):
     

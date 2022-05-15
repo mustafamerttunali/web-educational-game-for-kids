@@ -16,7 +16,7 @@ import five from "./assets/five.png";
 
 import { OneGesture, TwoGesture, ThreeGesture, FourGesture, FiveGesture } from './NumberGestures';
 
-export default function HandModuleTest() {
+export default function HandModuleTest(props) {
         const webcamRef = useRef(null);
         const canvasRef = useRef(null);
         const [emoji, setEmoji] = React.useContext(GestureContext);
@@ -79,6 +79,14 @@ export default function HandModuleTest() {
                         setEmoji(decisionGestureName)
                     } else{
                         setEmoji(undefined)
+                    }
+                }
+
+                if(props.isChoosingGame){
+                    for (let i = 0; i < hand.length; i++) {
+                        const keypoints = hand[i].boundingBox;
+                        console.log("Top left:", keypoints["topLeft"], "Bottom right:", keypoints["bottomRight"]);
+                        
                     }
                 }
               }

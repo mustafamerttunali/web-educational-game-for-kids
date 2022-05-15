@@ -237,7 +237,7 @@ export default function MathGame() {
                         ) : questions.length > 0 ? ( 
                             <Card>
                                 <Card.Body>
-                                    <HandModuleTest/>
+                                    <HandModuleTest isChoosingGame={false}/>
                                     <br></br>
                                     <Button variant="outline-primary" size="lg" onClick={() => {
                                         handleNextQuestion()

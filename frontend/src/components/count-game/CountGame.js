@@ -221,7 +221,7 @@ export default function CountGame() {
                 <Col md={4} className="text-center">
                     <Card>
                         <Card.Body>
-                            <HandModuleTest/>
+                            <HandModuleTest isChoosingGame={false}/>
                             <br></br>
                             <Button variant="outline-primary" size="lg" onClick={() => {
                                 handleNextQuestion()

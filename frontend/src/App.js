@@ -12,8 +12,11 @@ import ResetPassword from "./components/reset-password/ResetPassword";
 import Dashboard from "./components/dashboard/Dashboard";
 import Logout from "./components/logout/Logout";
 import HandModuleTest from "./components/hand-module/HandModuleTest";
+
+// Games
 import CountGame from "./components/count-game/CountGame";
 import MathGame from "./components/math-game/MathGame";
+import ChoosingGame from "./components/choosing-game/ChoosingGame";
 
 import { GestureContext } from "./components/hand-module/GestureContext";
 
@@ -26,7 +29,11 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/test-hand" element={<HandModuleTest />} />
+          <Route path="/test-hand" element={
+          <GestureContext.Provider value={value}>
+              <HandModuleTest />
+          </GestureContext.Provider>
+          } />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
@@ -34,12 +41,17 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/count-game" element={
               <GestureContext.Provider value={value}>
-                  <CountGame />
+                  <CountGame isChoosingGame={false}/>
               </GestureContext.Provider>
               } />
             <Route path="/math-game" element={
               <GestureContext.Provider value={value}>
-                  <MathGame />
+                  <MathGame isChoosingGame={false}/>
+              </GestureContext.Provider>
+              } />
+            <Route path="choosing-game" element={
+              <GestureContext.Provider value={value}>
+                  <ChoosingGame isChoosingGame={true}/>
               </GestureContext.Provider>
               } />
         </Routes>
