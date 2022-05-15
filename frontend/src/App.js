@@ -19,6 +19,7 @@ import MathGame from "./components/math-game/MathGame";
 import ChoosingGame from "./components/choosing-game/ChoosingGame";
 
 import { GestureContext, HandCoordinateContext } from "./components/hand-module/GestureContext";
+import AboutUs from "./components/about-us/AboutUs";
 
 function App() {
   const value = React.useState(null);
@@ -29,6 +30,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about-us" element={<AboutUs />} />
           <Route path="/test-hand" element={
           <GestureContext.Provider value={value}>
               <HandModuleTest />

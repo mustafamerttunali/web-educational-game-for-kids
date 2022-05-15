@@ -12,8 +12,8 @@ export default function UnsecretNav() {
             <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="me-auto">
                     <Nav.Link href="/">Home</Nav.Link>
-                    <Nav.Link href="#-">About Us</Nav.Link>
-                    <Nav.Link href="#">Contact</Nav.Link>
+                    <Nav.Link href="/about-us">About Us</Nav.Link>
+                    <Nav.Link href="/settings">Settings</Nav.Link>
                 </Nav>
                 <Nav>
                     <Nav.Link href="/register">Register</Nav.Link>
