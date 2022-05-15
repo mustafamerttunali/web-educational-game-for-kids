@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { Container, Row, Col, Card} from 'react-bootstrap'
 import UnsecretNav from "../unsecret-nav/UnsecretNav";
@@ -10,9 +10,34 @@ import Boy from '../../images/boy.png'
 // CSS
 import "./Home.css"
 
-export default function Home() {
-  
+const API = process.env.REACT_APP_API;
 
+export default function Home() {
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      fetch(API + '/dashboard', {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data['status'] !== 200){
+          window.location.href = '/login';
+        }
+        else{
+          window.location.href = '/dashboard';
+        }
+      })
+    } else{
+      window.location.href = '/login';
+    }
+  })
+  
   return (
     <div>
       <Container>

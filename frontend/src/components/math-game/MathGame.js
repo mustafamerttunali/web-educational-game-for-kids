@@ -76,7 +76,6 @@ export default function MathGame() {
         setColdStart(true);
     }
 
-    // get Questions at the beginning
     useEffect(() => {
         getQuestions()
     }, [])
@@ -105,6 +104,7 @@ export default function MathGame() {
                 if(userAnswer === currentQuestionAnswer){
                     setIsAnswerCorrect(true);
                     setInfoHand("Congrats! Your answer is correct! Redirecting to next question...");
+                    setTimer("");
                     setUserAnswers(prevState => {
                         return {
                             ...prevState, [currentQuestionIndex]: {
@@ -118,11 +118,14 @@ export default function MathGame() {
                         };
                     })
                     setVariant("success");
-                    handleNextQuestion();
+                    setTimeout(() => {
+                        handleNextQuestion();
+                      }, 1500);
                 }
                 else{
                     setInfoHand("Getting your answer... Please hold your hand!:" + timer);
                     setIsAnswerCorrect(false);
+                    setTimer("");
                     setInfoHand("Sorry! Your answer is incorrect! Redirecting to next question...");
                     setUserAnswers(prevState => {
                         return {
@@ -137,7 +140,9 @@ export default function MathGame() {
                         };
                     })
                     setVariant("danger");
-                    handleNextQuestion()
+                    setTimeout(() => {
+                        handleNextQuestion();
+                      }, 1500);
                 }
                 setIsAnswered(true);
             }
@@ -150,12 +155,14 @@ export default function MathGame() {
     }, [gesture])
 
     useEffect(() => {
-        console.log(userAnswers)
-        if(currentQuestionIndex === questions.length){
+        if(currentQuestionIndex === questions.length && userAnswers != ""){
             setTimer("");
             if(coldStart){
                 try {
-                    sendAnswers(userAnswers, "/math-game");   
+                    sendAnswers(userAnswers, "/math-game");
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                      }, 1500);   
                 } catch (error) {
                     
                 }
@@ -167,15 +174,19 @@ export default function MathGame() {
             try {
                 setCurrentQuestionAnswer(questions[currentQuestionIndex].correct_answer);
             } catch (error) {
-                
+ 
             }
         }
     }, [currentQuestionIndex])
 
     const handleNextQuestion = () => {
         setCurrentQuestionIndex(prevState => prevState + 1)
-        if(currentQuestionIndex === questions.length - 2 ){
-            setButtonText("Finish");
+        if(currentQuestionIndex === questions.length - 1 && userAnswers == ""){
+            setInfoHand("No answers found! Redirecting to home page...");
+            setVariant("info");
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+              }, 1500);  
         }
     }
 
@@ -213,18 +224,17 @@ export default function MathGame() {
                                     secondNumber={setNumberImage(questions[currentQuestionIndex].second_number)}
                                     />
                         ) : (
-                        currentQuestionIndex === questions.length ? (
+                        currentQuestionIndex === questions.length  ? (
                             <div>
                                 <br></br>
                                 <Alert variant="light">
                                     <Alert.Heading className='text-center'>
-                                        There are no question available for that game.
+                                        {infoHand}
                                     </Alert.Heading>
                                 </Alert>
                             </div>
                     ) : (
                         <h1>Loading...</h1> 
-                        // TODO: Check if there are questions available
                         )
                     )
                 }
@@ -246,7 +256,7 @@ export default function MathGame() {
                             </Card>
                         ) : (
                             <div>
-                                <p>Camera is closed.</p>
+                                <p>Camera is closed. No questions found.</p>
                             </div>
                         )
                     }
@@ -256,31 +266,3 @@ export default function MathGame() {
     </div>
   )
 }
-
-
-{/* {
-
-                                    isAnswered ?
-                                        (
-                                       isAnswerCorrect ?
-                                            <Alert variant="success">
-                                                {infoHand}
-                                            </Alert>
-                                        :
-                                            <Alert variant="danger">
-                                                {infoHand}
-                                            </Alert>
-                                        )
-                                    :
-                                        (
-                                            gesture === null ? (
-                                                <Alert  variant={"warning"}>
-                                                    {infoHand}
-                                                </Alert>
-                                            ) : (
-                                                <Alert  variant={"primary"}>
-                                                    {infoHand}: {timer}
-                                                </Alert>
-                                            )
-                                        )
-                                } */}

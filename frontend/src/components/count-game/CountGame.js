@@ -22,6 +22,7 @@ export default function CountGame() {
     const [isAnswered, setIsAnswered] = useState(false);
     const [timer, setTimer] = useState(0);
     const [gesture] = React.useContext(GestureContext);
+    const [isGameOver, setIsGameOver] = useState(false);
 
     const [coldStart, setColdStart] = useState(false);
 
@@ -133,7 +134,13 @@ export default function CountGame() {
     useEffect(() => {
         if(currentQuestionIndex === questions.length){
             if(coldStart){
+                setIsGameOver(true);
                 sendAnswers(userAnswers, `/count-game`);
+                // Hide alert by document.getElementById("alert")
+                document.getElementById("infoAlert").style.display = "none";
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                  }, 1500);
             }
         }else{
             try {
@@ -169,22 +176,22 @@ export default function CountGame() {
                                     isAnswered ?
                                         (
                                        isAnswerCorrect ?
-                                            <Alert variant="success">
+                                            <Alert variant="success" id="infoAlert">
                                                 {infoHand}
                                             </Alert>
                                         :
-                                            <Alert variant="danger">
+                                            <Alert variant="danger" id="infoAlert">
                                                 {infoHand}
                                             </Alert>
                                         )
                                     :
                                         (
                                             gesture === null ? (
-                                                <Alert  variant={"warning"}>
+                                                <Alert  variant={"warning"} id="infoAlert">
                                                     {infoHand}
                                                 </Alert>
                                             ) : (
-                                                <Alert  variant={"primary"}>
+                                                <Alert  variant={"primary"} id="infoAlert">
                                                     {infoHand}: {timer}
                                                 </Alert>
                                             )
@@ -221,11 +228,21 @@ export default function CountGame() {
                 <Col md={4} className="text-center">
                     <Card>
                         <Card.Body>
-                            <HandModuleTest isChoosingGame={false}/>
-                            <br></br>
-                            <Button variant="outline-primary" size="lg" onClick={() => {
-                                handleNextQuestion()
-                            }}> {buttonText}</Button>
+                            { isGameOver ? (
+                                <Alert variant="info">
+                                    <Alert.Heading className='text-center'>
+                                        Game is over! Redirecting to the dashboard...
+                                    </Alert.Heading>
+                                </Alert>
+                            ) : (
+                                <div>
+                                    <HandModuleTest isChoosingGame={false}/>
+                                    <br></br>
+                                    <Button variant="outline-primary" size="lg" onClick={() => {
+                                        handleNextQuestion()
+                                    }}> {buttonText}</Button>
+                                </div>
+                            )}
                         </Card.Body>
                     </Card>
                 </Col>

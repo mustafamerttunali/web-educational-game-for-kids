@@ -34,7 +34,7 @@ export default function Register() {
   const handleValidation = (event) => {
     let formIsValid = true;
 
-    if (!parentName.match(/^[a-zA-Z]{3,22}$/)) {
+    if (!parentName.match(/^[a-z A-Z]{2,22}$/)) {
       formIsValid = false;
       setParentNameError(
         "Only letters and length must best be min:3 and max:22 characters."
@@ -43,7 +43,7 @@ export default function Register() {
     }
     setParentNameError("");
   
-    if (!parentSurname.match(/^[a-zA-Z]{3,22}$/)) {
+    if (!parentSurname.match(/^[a-z A-Z]{2,22}$/)) {
       formIsValid = false;
       setParentSurnameError(
         "Only letters and length must best be min:3 and max:22 characters."
@@ -52,7 +52,7 @@ export default function Register() {
     }
     setParentSurnameError("");
 
-    if (!childName.match(/^[a-zA-Z]{3,22}$/)) {
+    if (!childName.match(/^[a-z A-Z]{2,22}$/)) {
       formIsValid = false;
       setChildNameError(
         "Only letters and length must best be min:3 and max:22 characters."
@@ -61,7 +61,7 @@ export default function Register() {
     }
     setChildNameError("");
 
-    if (!childSurname.match(/^[a-zA-Z]{3,22}$/)) {
+    if (!childSurname.match(/^[a-z A-Z]{3,22}$/)) {
       formIsValid = false;
       setChildSurnameError(
         "Only letters and length must best be min:3 and max:22 characters."
@@ -78,11 +78,11 @@ export default function Register() {
       setEmailError("");
       formIsValid = true;
     }
-
-    if (!password.match(/^[a-zA-Z]{8,22}$/)) {
+  
+    if (password.length < 8) {
       formIsValid = false;
       setpasswordError(
-        "Only letters and length must best be min:8 and max:22 characters."
+        "At least 8 char long!"
       );
       return false;
     } else {
