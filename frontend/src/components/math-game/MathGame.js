@@ -63,7 +63,7 @@ export default function MathGame() {
             setCurrentQuestionAnswer(data[currentQuestionIndex].correct_answer);
             setUser(data["player"]);
             const keys = Object.keys(data).filter(key => typeof data[key] === 'object');
-            for(let i = 0; i < keys.length -4; i++){
+            for(let i = 0; i < keys.length; i++){
                 let key = keys[i];
                 setQuestions(prevState => [...prevState, data[key]])
             }
