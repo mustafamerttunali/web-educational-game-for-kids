@@ -284,8 +284,6 @@ class Math_Game_PDF(FPDF):
 
         cell_w = self.get_string_width(chapter_name) + 100
         reset_x = lambda : self.set_x((self.w - cell_w) / 2)
-        image_y = 60
-        image_x = 25
 
         self.set_text_color(0, 0, 0)
 
@@ -362,11 +360,11 @@ class Math_Game_PDF(FPDF):
             user_answer = data["user_answer"]
 
             text1 = f"Question {i}"
-            text2 = f"This question answered " + ("correctly" if bool(result) else "incorrectly" + "!")
+            text2 = f"This question " + "not answered" if result == None else ("answered correctly" if bool(result) else "answered incorrectly" + "!")
             text3 = f"{first_number} {operator} {second_number} = {correct_answer}"
             text4 = "" if bool(result) else f"User answer: {user_answer}"
 
-            resultTextColor = (0,255,0) if bool(result) else (255,0,0)
+            resultTextColor = (128, 128, 128) if result == None else ((0,255,0) if bool(result) else (255,0,0))
             cell_pad = 10
             pad_x = self.get_string_width(text2)
             pad_y = 7
