@@ -1,6 +1,6 @@
 from bson.objectid import ObjectId
 from fpdf import FPDF
-import os
+from os import makedirs, path
 
 class Count_Game_PDF(FPDF):
     
@@ -148,7 +148,7 @@ class Count_Game_PDF(FPDF):
                 error_no        = j
                 object_name     = error["name"]
                 correct_answer  = error["correct_answer"]
-                user_answer     = error["user_answer"]
+                user_answer     = error["user_answer"] or "-"
 
                 text = f"                {error_no}.     Correct Answer:   {correct_answer}          User Answer:   {user_answer}"
                 
@@ -284,8 +284,6 @@ class Math_Game_PDF(FPDF):
 
         cell_w = self.get_string_width(chapter_name) + 100
         reset_x = lambda : self.set_x((self.w - cell_w) / 2)
-        image_y = 60
-        image_x = 25
 
         self.set_text_color(0, 0, 0)
 
@@ -362,11 +360,11 @@ class Math_Game_PDF(FPDF):
             user_answer = data["user_answer"]
 
             text1 = f"Question {i}"
-            text2 = f"This question answered " + ("correctly" if bool(result) else "incorrectly" + "!")
+            text2 = "This question " + ("not answered" if result == None else ("answered correctly" if bool(result) else "answered incorrectly" + "!"))
             text3 = f"{first_number} {operator} {second_number} = {correct_answer}"
-            text4 = "" if bool(result) else f"User answer: {user_answer}"
+            text4 = ("" if (result==None) or bool(result) else f"User answer: {user_answer}")
 
-            resultTextColor = (0,255,0) if bool(result) else (255,0,0)
+            resultTextColor = (128, 128, 128) if result == None else ((0,255,0) if bool(result) else (255,0,0))
             cell_pad = 10
             pad_x = self.get_string_width(text2)
             pad_y = 7
@@ -635,49 +633,24 @@ class Choose_Game_PDF(FPDF):
                 boundary+=3
 
             i+=1
-            
-def count_game_reporting(mongo, user_id) :
-    try :
-        pdf = Count_Game_PDF(mongo, user_id)
-        pdf.set_auto_page_break(auto = True, margin = 15)
-        pdf.set_margins(15, 15, 15)
-        pdf.add_page()
-        pdf.write_initial_page()
-        pdf.write_data()
-        if not os.path.isdir("user_reports/count_game"):
-            os.makedirs("user_reports/count_game")
-        pdf.output("user_reports/count_game/" + str(user_id) + ".pdf")    
-    except Exception as e :
-        print(e)
-        print("Error in count game reporting")
 
-def math_game_reporting(mongo, user_id) :
-    try :
-        pdf = Math_Game_PDF(mongo, user_id)
-        pdf.set_auto_page_break(auto = True, margin = 15)
-        pdf.set_margins(15, 15, 15)
-        pdf.add_page()
-        pdf.write_initial_page()
-        pdf.write_data()
-        if not os.path.isdir("user_reports/math_game"):
-            os.makedirs("user_reports/math_game")
-        pdf.output("user_reports/math_game/" + str(user_id) + ".pdf")    
-    except Exception as e :
-        print(e)
-        print("Error in math_game_reporting")
+# names are same for appy mailing.
+def count_game_reporting(mongo, user_id)    : _generate_report(mongo, user_id, Count_Game_PDF, "count")
+def math_game_reporting(mongo, user_id)     : _generate_report(mongo, user_id, Math_Game_PDF, "math")
+def choose_game_reporting(mongo, user_id)   : _generate_report(mongo, user_id, Choose_Game_PDF, "choose")
 
-def choose_game_reporting(mongo, user_id) :
+def _generate_report(mongo, user_id, Class, game_name) :
+
     try :
-        pdf = Choose_Game_PDF(mongo, user_id)
+        pdf = Class(mongo, user_id)
         pdf.set_auto_page_break(auto = True, margin = 15)
         pdf.set_margins(15, 15, 15)
         pdf.add_page()
         pdf.write_initial_page()
         pdf.write_data()
-        if not os.path.isdir("user_reports/choose_game"):
-            os.makedirs("user_reports/choose_game")
-        pdf.output("user_reports/choose_game/" + str(user_id) + ".pdf")
+        if not path.isdir("user_reports/"+game_name+"_game"):
+            makedirs("user_reports/"+game_name+"_game")
+        pdf.output("user_reports/"+game_name+"_game/" + str(user_id) + ".pdf")    
     except Exception as e :
         print(e)
-        print("Error in choose_game_reporting")
-    
+        print(f"Error in {game_name} game reporting")

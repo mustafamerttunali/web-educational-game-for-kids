@@ -412,7 +412,8 @@ def choose_game():
         return jsonify({"status": 401})
         
 
-"""@app.route('/forgot_password', methods=['POST'])
+"""
+@app.route('/forgot_password', methods=['POST'])
 def forgot_password():
     email = request.form['email']
     user = mongo.db.users.find_one({'email': email})
@@ -425,7 +426,8 @@ def forgot_password():
     msg.body = 'Your password is: ' + user.password
     mail.send(msg)
 
-    flash('Password sent to your email')"""
+    flash('Password sent to your email')
+"""
 
 @app.route('/deneme', methods=['GET'])
 @jwt_required()
@@ -437,7 +439,6 @@ def deneme():
     send_count_game_report(app, mail, user)
     send_math_game_report(app, mail, user)
     send_choose_game_report(app, mail, user)
-    
 
     return jsonify({"status": 200})
 
