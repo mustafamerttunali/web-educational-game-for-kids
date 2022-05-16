@@ -15,28 +15,30 @@ const API = process.env.REACT_APP_API;
 export default function Home() {
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      fetch(API + '/dashboard', {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data['status'] !== 200){
-          window.location.href = '/login';
-        }
-        else{
-          window.location.href = '/dashboard';
-        }
-      })
-    } else{
-     
+    const token = localStorage.getItem('token')
+    try{
+      if (token) {
+        fetch(API + '/dashboard', {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer ' + token
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data['status'] === 200){
+            window.location.href = '/dashboard';
+          }
+        })
+      } else{
+      
+      }
+    } catch (error) {
+      token.removeItem('token')
     }
-  })
+    
+
+  }, [])
   
   return (
     <div>

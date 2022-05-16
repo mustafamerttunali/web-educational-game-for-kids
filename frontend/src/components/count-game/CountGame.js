@@ -103,7 +103,9 @@ export default function CountGame() {
                             }
                         };
                     })
-                    handleNextQuestion();
+                    setTimeout(() => {
+                        handleNextQuestion();
+                      }, 1500);
                 }
                 else{
                     setIsAnswerCorrect(false);
@@ -118,7 +120,9 @@ export default function CountGame() {
                             }
                         };
                     })
-                    handleNextQuestion()
+                    setTimeout(() => {
+                        handleNextQuestion();
+                      }, 1500);
                 }
                 setIsAnswered(true);
             }
