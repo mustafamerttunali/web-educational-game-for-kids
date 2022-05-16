@@ -208,7 +208,7 @@ export default function MathGame() {
             <SecretNav user={user}/>
             <Row className='d-flex justify-content-left'>
                 <Col md={12}>
-                    <h1 className='text-center'>Counting Game</h1>
+                    <h1 className='text-center'>Math Game</h1>
                     <hr></hr>
                 </Col>
                 <Col md={12}>
