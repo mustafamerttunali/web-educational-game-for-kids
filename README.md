@@ -19,4 +19,12 @@ COMP 204 Project - MEF University
 - In the other terminal `cd backend`
 - `python app.py`
 
+## Goals:
+- [ ] Dockerize the project.
+
+## Authors:
+- Mustafa Mert Tunali - tunalim@mef.edu.tr
+- Ahmet Yildiz - yildizah@mef.edu.tr
+- Emir Cetin Memis - memise@mef.edu.tr
+
 Note: If the installation setup does not work please mail to tunalim@mef.edu. 
