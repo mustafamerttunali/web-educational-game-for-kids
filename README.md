@@ -27,4 +27,4 @@ COMP 204 Project - MEF University
 - Ahmet Yildiz - yildizah@mef.edu.tr
 - Emir Cetin Memis - memise@mef.edu.tr
 
-Note: If the installation setup does not work please mail to tunalim@mef.edu. 
+Note: If the installation setup does not work please mail to tunalim@mef.edu.tr 
