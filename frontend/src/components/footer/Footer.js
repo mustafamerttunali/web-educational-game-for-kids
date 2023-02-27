@@ -13,9 +13,12 @@ export default function Footer() {
           <Row>
               <Col md ={12}>
                 <p className="text-center"> 
-                  <small>
+                  {/* <small>
                     &copy; Copyright {currentYear} - Mustafa Mert Tunali, Ahmet Yildiz, Emir Çetin Memis
-                  </small> 
+                  </small>  */}
+                   <small>
+                      {currentYear} - MEF Dynamics Eğitim
+                  </small>
                 </p> 
               </Col>
           </Row>

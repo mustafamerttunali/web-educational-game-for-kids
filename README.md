@@ -1,22 +1,39 @@
 # web-educational-game-for-kids
 COMP 204 Project - MEF University
 
-## How to Run?
-### Front-End:
-- For the front-end download node.js from here: https://nodejs.org/en/download/ and install it. When the installation is complete, cd to the frontend directory and type to the terminal `npm install`. This will install all required frameworks.  After that check back-end installation.
+## Getting Started
+Please check port 3000 and 5000 are not used by other applications. I changed the port number in docker-compose.yml file. If you want to change the port number, please change the port number in docker-compose.yml file.  <br>
 
+Download [Docker Desktop](https://www.docker.com/products/docker-desktop) for Mac or Windows. [Docker Compose](https://docs.docker.com/compose) will be automatically installed. On Linux, make sure you have the latest version of [Compose](https://docs.docker.com/compose/install/).
 
-### Back-End:
-- For the back-end you will need `brew`. Install brew from https://brew.sh/index_tr here then:
-- `brew tap mongodb/brew`
-- `brew install mongodb-community`
-- `brew services start mongodb-community` 
-- Then cd to the backend and type `pip install -r requirements.txt`
+---------------
 
-## How to start:
-- `cd frontend`
-- `npm start`
-- In the other terminal `cd backend`
-- `python app.py`
+### Linux Containers
 
-Note: If the installation setup does not work please mail to tunalim@mef.edu. 
+Create a local copy of this repository and run:
+
+```
+docker-compose build
+```
+
+This sets Compose and builds a local development environment according to specifications in docker-compose. Note that this settings for development, and not production.
+
+After the containers have been built (this may take a few minutes), run:
+
+```
+docker-compose up
+```
+
+This one command boots up a local server for Flask (on port 5000) and React (on port 3000). Go to:
+
+```
+http://localhost:3000/ 
+```
+
+If you want to stop running local servers, run
+
+```
+docker-compose down
+```
+
+Note: If the setup does not work please mail to tunalim@mef.edu.

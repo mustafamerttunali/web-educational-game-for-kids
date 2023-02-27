@@ -60,19 +60,17 @@ export default function Dashboard() {
         <Row className='d-flex justify-content-center'>
           <SecretNav user={user}/>
           <Col md={12}>
-            <h1 className='text-center'>Dashboard</h1>
+            <h1 className='text-center'>Panel</h1>
             <hr></hr>
           </Col>
 
           <Col md={12}>
           <Card className="text-center">
-              <Card.Header>Welcome to Web Educational Game for Kids, <strong>{user}</strong></Card.Header>
+              <Card.Header>Çocuklar için Web Tabanlı Eğitim Oyununa Hoşgeldiniz!, <strong>{user}</strong></Card.Header>
                 <Card.Body>
-                  <Card.Title>A COMP 204 project.</Card.Title>
+                  <Card.Title>TEKNOFEST 2023 - Eğitim Teknolojileri Yarışması </Card.Title>
                   <Card.Text>
-                    A web application for kids to learn about the world around them. <br></br>
-                    This project is developed by COMP 204 students at the MEF University. <br></br>
-                    Instructor: Prof.Dr. Muhittin Gokmen.
+                    Bilgisayarlı Görü ve Ses Tanıma teknolojileriyle çocuklara oyunlar aracılığıyla eğitim veren bir platformdur.
                   </Card.Text>
               </Card.Body>
             </Card>
@@ -82,13 +80,13 @@ export default function Dashboard() {
             <Card>
               <Card.Img className='mx-auto d-block' variant="center" src={Apple} style={{height:"120px", width:"30%"}}/>
               <Card.Body className='text-center'>
-                <Card.Title className="text-center">Counting Game</Card.Title>
+                <Card.Title className="text-center">Sayma Oyunu</Card.Title>
                 <Card.Text className='text-justify'>
-                Counting Game teaches children to count by using objects that we often use in our lives.
+                Sayma Oyunu, hayatımızda sıklıkla kullandığımız nesneleri kullanarak çocuklara saymayı öğretir
                 <br></br>
                 <br></br>
                 </Card.Text>
-                <a href="/count-game" className="btn btn-primary">Go to Game</a>
+                <a href="/count-game" className="btn btn-primary">Oyna</a>
                 <br></br>
                 <br></br>
                   <CircularProgressbar value={countGamePercentage} text={`${countGamePercentage}%`} style={{height:"100px"}}/>
@@ -100,11 +98,11 @@ export default function Dashboard() {
             <Card>
               <Card.Img className='mx-auto d-block' id="kidImage" variant="center" src={Robot} style={{height:"120px", width:"30%"}}/>
               <Card.Body className='text-center'>
-                <Card.Title className="text-center">Math Game</Card.Title>
+                <Card.Title className="text-center">Matematik Oyunu</Card.Title>
                 <Card.Text className="text-justify">
-                  Math Game aims to teach children addition, subtraction, multiplication and division with simple numbers.
+                  Matematik Oyunu, çocuklara basit sayılarla toplama, çıkarma, çarpma ve bölmeyi öğretmeyi amaçlar.
                 </Card.Text>
-                <a href="/math-game" className="btn btn-primary text-center">Go to Math Game</a>
+                <a href="/math-game" className="btn btn-primary text-center">Oyna</a>
                 <br></br>
                 <br></br>
                   <CircularProgressbar value={mathGamePercentage} text={`${mathGamePercentage}%`} style={{height:"100px"}}/>
@@ -116,13 +114,13 @@ export default function Dashboard() {
             <Card>
               <Card.Img className='mx-auto d-block' variant="center" src={Boy} style={{height:"120px", width:"20%"}}/>
               <Card.Body className='text-center'>
-                <Card.Title className="text-center">Choosing Game</Card.Title>
+                <Card.Title className="text-center">Seçme Oyunu</Card.Title>
                 <Card.Text>
-                  Choose game aims to teach young children about objects that are frequently used in our lives.
+                  Seçme oyunu, küçük çocuklara hayatımızda sıklıkla kullanılan nesneleri öğretmeyi amaçlar.
                   <br></br>
                   <br></br>
                 </Card.Text>
-                <a href="/choosing-game" className="btn btn-primary text-center">Go to Choosing Game</a>
+                <a href="/choosing-game" className="btn btn-primary text-center">Oyna</a>
                 <br></br>
                 <br></br>
                   <CircularProgressbar className="primary" value={choosingGamePercentage} text={`${choosingGamePercentage}%`} style={{height:"100px"}}/>

@@ -6,7 +6,10 @@ export default function Question(props) {
     <div>
         <Col md={12}>
             <Card>
-                <h1>Q:{props.questions[props.currentQuestionIndex].number} How many <strong>{props.questions[props.currentQuestionIndex].name}</strong> in the picture? :{props.questions[props.currentQuestionIndex].number_of_object}</h1>
+                <h1>
+                    {/* :{props.questions[props.currentQuestionIndex].number_of_object}  */}
+                    {/* <strong>{props.questions[props.currentQuestionIndex].name}</strong> var? */}
+                    S:{props.questions[props.currentQuestionIndex].number} Bu görselde kaç tane obje görüyorsunuz?</h1>
                 <Row>
                     {Array(props.questions[props.currentQuestionIndex].number_of_object).fill(0).map((_, index) => (
                         <Col md={6} key={index}>

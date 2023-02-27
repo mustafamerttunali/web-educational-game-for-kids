@@ -15,7 +15,7 @@ export default function CountGame() {
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [buttonText, setButtonText] = useState("Next Question");
+    const [buttonText, setButtonText] = useState("Sonraki Soru");
     const [userAnswers, setUserAnswers] = useState("");
     const [infoHand, setInfoHand] = useState("");
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
@@ -79,12 +79,12 @@ export default function CountGame() {
         
         let count = 2;
         if(gesture === null || gesture === undefined){
-            setInfoHand("Hand is not detected!");
+            setInfoHand("El tanınamadı!");
             setIsAnswered(false);
             return;
         }
         else{
-            setInfoHand("Getting your answer... Please hold your hand!");
+            setInfoHand("Cevabınızı çekiyoruz, elinizi sabit tutunuz...");
         }
 
         const interval = setInterval(async () => {
@@ -92,7 +92,7 @@ export default function CountGame() {
                 clearInterval(interval);
                 if(userAnswer === currentQuestion){
                     setIsAnswerCorrect(true);
-                    setInfoHand("Congrats! Your answer is correct! Redirecting to next question...");
+                    setInfoHand("Tebrikler, cevabınız doğru! Diğer soruya geçiliyor!");
                     setUserAnswers(prevState => {
                         return {
                             ...prevState, [questions[currentQuestionIndex].number]: {
@@ -157,7 +157,7 @@ export default function CountGame() {
     const handleNextQuestion = () => {
         setCurrentQuestionIndex(prevState => prevState + 1)
         if(currentQuestionIndex === questions.length - 2 ){
-            setButtonText("Finish");
+            setButtonText("Bitir");
         }
     }
 
@@ -167,12 +167,12 @@ export default function CountGame() {
             <SecretNav user={user}/>
             <Row className='d-flex justify-content-left'>
                 <Col md={12}>
-                    <h1 className='text-center'>Counting Game</h1>
+                    <h1 className='text-center'>Sayma Oyunu</h1>
                     <hr></hr>
                 </Col>
                 <Col md={12}>
                     <Card className="text-center">
-                        <Card.Header>Player: <strong>{user}</strong></Card.Header>
+                        <Card.Header>Oyuncu: <strong>{user}</strong></Card.Header>
                         <Card.Body>
                                 {
 
@@ -216,12 +216,12 @@ export default function CountGame() {
                                 <br></br>
                                 <Alert variant="info">
                                     <Alert.Heading className='text-center'>
-                                        There are no question available for that game.
+                                        Sorular tamamlandı.
                                     </Alert.Heading>
                                 </Alert>
                             </div>
                     ) : (
-                        <h1>Loading...</h1> 
+                        <h1>Yükleniyor...</h1> 
                         // TODO: Check if there are questions available
                         )
                     )
@@ -234,7 +234,7 @@ export default function CountGame() {
                             { isGameOver ? (
                                 <Alert variant="info">
                                     <Alert.Heading className='text-center'>
-                                        Game is over! Redirecting to the dashboard...
+                                        Oyun bitti! Panele yönlendiriliyorsunuz...
                                     </Alert.Heading>
                                 </Alert>
                             ) : (

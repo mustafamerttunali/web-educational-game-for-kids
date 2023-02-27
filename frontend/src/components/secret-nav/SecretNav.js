@@ -11,14 +11,14 @@ export default function SecretNav(props) {
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="me-auto">
-                    <Nav.Link href="/">Home</Nav.Link>
-                    <Nav.Link href="/about-us">About Us</Nav.Link>
+                    <Nav.Link href="/">Anasayfa</Nav.Link>
+                    <Nav.Link href="/about-us">Hakkımızda</Nav.Link>
                 </Nav>
                 <Nav>
-                    <Navbar.Brand><small>Welcome, </small>  <strong> {props.user}</strong></Navbar.Brand>
+                    <Navbar.Brand><small>Hoşgeldiniz, </small>  <strong> {props.user}</strong></Navbar.Brand>
                 </Nav>
                 <Nav>
-                    <Nav.Link style={{color:"alphablue"}} href="/logout">Logout</Nav.Link>
+                    <Nav.Link style={{color:"alphablue"}} href="/logout">Çıkış</Nav.Link>
                 </Nav>
             </Navbar.Collapse>
             </Container>
