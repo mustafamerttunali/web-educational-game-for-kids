@@ -36,4 +36,4 @@ If you want to stop running local servers, run
 docker-compose down
 ```
 
-Note: If the setup does not work please mail to tunalim@mef.edu.
+Note: If the setup does not work please mail to tunalim@mef.edu.tr
