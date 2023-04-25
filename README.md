@@ -1,5 +1,4 @@
 # web-educational-game-for-kids
-COMP 204 Project - MEF University
 
 ## Getting Started
 Please check port 3000 and 5000 are not used by other applications. I changed the port number in docker-compose.yml file. If you want to change the port number, please change the port number in docker-compose.yml file.  <br>
