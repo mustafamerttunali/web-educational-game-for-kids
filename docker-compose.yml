@@ -23,7 +23,7 @@ services:
     volumes:
       - './data:/data/db'
     ports:
-      - "27017:27017"  
+      - "27017:27017"
 
 # http://127.0.0.1:5000
 # is this valid from frontend?

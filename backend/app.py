@@ -32,7 +32,7 @@ from report.reporting import (
 import random
 import json
 
-TOKEN_EXPIRE_TIME = 2  # HOURS
+TOKEN_EXPIRE_TIME = 24  # HOURS
 TOTAL_QUESTION_NUMBER = 30
 
 app = Flask(__name__)
